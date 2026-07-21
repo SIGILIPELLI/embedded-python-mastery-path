@@ -1,0 +1,100 @@
+site_name: Embedded Python Mastery Path
+site_description: A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first (with Raspberry Pi Pico notes), every example runnable in the free Wokwi online simulator, no hardware required.
+site_url: https://sigilipelli.github.io/embedded-python-mastery-path/
+repo_url: https://github.com/SIGILIPELLI/embedded-python-mastery-path
+repo_name: embedded-python-mastery-path
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Privacy Policy: privacy.md
+  - "Level 1 · Entry":
+      - Overview: level-1/index.md
+      - "01 · MicroPython vs. Python": level-1/01-micropython-vs-python.md
+      - "02 · REPL & Workflow": level-1/02-repl-workflow.md
+      - "03 · GPIO Basics": level-1/03-gpio-basics.md
+      - "04 · PWM & ADC": level-1/04-pwm-adc.md
+      - "05 · Timers & Interrupts": level-1/05-timers-interrupts.md
+      - "06 · I2C & SPI Sensors": level-1/06-i2c-spi-sensors.md
+      - "07 · Files & Persistence": level-1/07-files-persistence.md
+      - "08 · WiFi & HTTP": level-1/08-wifi-http.md
+      - "09 · uasyncio Basics": level-1/09-uasyncio-basics.md
+      - "10 · Capstone — WiFi Sensor Logger": level-1/10-capstone-wifi-sensor-logger.md
+  - "Level 2 · Intermediate":
+      - Overview: level-2/index.md
+      - "01 · MQTT & IoT Messaging": level-2/01-mqtt-iot-messaging.md
+      - "02 · BLE with aioble": level-2/02-ble-aioble.md
+      - "03 · Deep Sleep & Battery Power": level-2/03-deep-sleep-battery.md
+      - "04 · Writing Custom Sensor Drivers": level-2/04-custom-sensor-drivers.md
+      - "05 · mpremote & mip — Tooling Deep Dive": level-2/05-mpremote-mip-tooling.md
+      - "06 · NTP, RTC & Timekeeping": level-2/06-ntp-rtc-timekeeping.md
+      - "07 · NeoPixels, Displays & Device UI": level-2/07-neopixels-displays-ui.md
+      - "08 · ESP-NOW & Peer-to-Peer WiFi": level-2/08-espnow-peer-to-peer.md
+      - "09 · Error Handling & On-Device Logging": level-2/09-error-handling-logging.md
+      - "10 · Project — MQTT Weather Station": level-2/10-project-mqtt-weather-station.md
+  - "Level 3 · Advanced":
+      - Overview: level-3/index.md
+      - "01 · Memory Management & the Garbage Collector": level-3/01-memory-gc.md
+      - "02 · Performance Profiling & Optimization": level-3/02-performance-profiling.md
+      - "03 · Native & Viper Code Emitters": level-3/03-native-viper-emitters.md
+      - "04 · Writing C Modules for MicroPython": level-3/04-c-modules.md
+      - "05 · RP2040 PIO — Programmable I/O": level-3/05-rp2040-pio.md
+      - "06 · Advanced uasyncio Patterns": level-3/06-advanced-uasyncio.md
+      - "07 · The Inline Assembler": level-3/07-inline-assembler.md
+      - "08 · Frozen Modules & Custom Manifests": level-3/08-frozen-modules-manifests.md
+      - "09 · Threads & Dual-Core MicroPython": level-3/09-threads-dual-core.md
+      - "10 · Project — High-Speed Data Acquisition": level-3/10-project-high-speed-daq.md
+  - "Level 4 · Master":
+      - Overview: level-4/index.md
+      - "01 · Production Firmware Architecture": level-4/01-production-architecture.md
+      - "02 · OTA Updates for MicroPython Fleets": level-4/02-ota-updates-fleets.md
+      - "03 · Device Provisioning & Secrets Management": level-4/03-provisioning-secrets.md
+      - "04 · Watchdogs, Brownout & Robustness Patterns": level-4/04-watchdogs-robustness.md
+      - "05 · Custom Firmware Builds & Board Definitions": level-4/05-custom-firmware-builds.md
+      - "06 · Security Hardening — TLS & Secure Storage": level-4/06-security-hardening.md
+      - "07 · Fleet Management & Remote Monitoring": level-4/07-fleet-management.md
+      - "08 · CI, Emulation & Automated Testing": level-4/08-ci-automated-testing.md
+      - "09 · Manufacturing & Factory Test": level-4/09-manufacturing-factory-test.md
+      - "10 · Capstone — Production IoT Product": level-4/10-capstone-production-iot.md
