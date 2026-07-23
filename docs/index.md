@@ -40,6 +40,8 @@ unchanged on real boards.
 
 Start here → [Level 1 · Entry](level-1/index.md)
 
+🎥 **Prefer video?** Watch the [Mastery Path video series](https://youtube.com/@sigilipelli) on YouTube — Shorts and full walkthroughs of these lessons.
+
 ## More from the Mastery Path series
 
 Free, structured, module-wise training across 31 other languages and platforms:
