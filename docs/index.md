@@ -1,3 +1,8 @@
+---
+title: "Learn Embedded Python (MicroPython) Free: Full Course"
+description: "Free MicroPython/embedded Python course from beginner to advanced, with real hands-on projects. Part of a 37-course free learning library."
+---
+
 # Embedded Python Mastery Path
 
 A structured, module-wise MicroPython training program that takes you from
