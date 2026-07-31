@@ -22,9 +22,9 @@ unchanged on real boards.
 | Level | Focus | Modules |
 |-------|-------|---------|
 | [Level 1 · Entry](level-1/index.md) | MicroPython on ESP32: REPL workflow, GPIO, PWM/ADC, timers & interrupts, I2C sensors, files, WiFi, `uasyncio` | 9 topics + 1 capstone |
-| [Level 2 · Intermediate](level-2/index.md) | MQTT, BLE with `aioble`, deep sleep & battery power, custom drivers, tooling, ESP-NOW | 9 topics + 1 project |
-| [Level 3 · Advanced](level-3/index.md) | Memory & GC internals, native/viper emitters, C modules, RP2040 PIO, performance work | 9 topics + 1 project |
-| [Level 4 · Master](level-4/index.md) | Production MicroPython: OTA, provisioning, robustness, custom firmware builds, manufacturing | 9 topics + 1 capstone |
+| Level 2 · Intermediate (coming soon) | MQTT, BLE with `aioble`, deep sleep & battery power, custom drivers, tooling, ESP-NOW | 9 topics + 1 project |
+| Level 3 · Advanced (coming soon) | Memory & GC internals, native/viper emitters, C modules, RP2040 PIO, performance work | 9 topics + 1 project |
+| Level 4 · Master (coming soon) | Production MicroPython: OTA, provisioning, robustness, custom firmware builds, manufacturing | 9 topics + 1 capstone |
 
 ## How to use this site
 
