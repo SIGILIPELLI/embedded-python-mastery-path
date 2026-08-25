@@ -52,4 +52,48 @@
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/10-capstone-wifi-sensor-logger/</loc>
          <lastmod>2026-08-25</lastmod>
     </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/01-mqtt-iot-messaging/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/02-ble-aioble/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/03-deep-sleep-battery/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/04-custom-sensor-drivers/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/05-mpremote-mip-tooling/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/06-ntp-rtc-timekeeping/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/07-neopixels-displays-ui/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/08-espnow-peer-to-peer/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/09-error-handling-logging/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
+    <url>
+         <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-2/10-project-mqtt-weather-station/</loc>
+         <lastmod>2026-08-25</lastmod>
+    </url>
 </urlset>

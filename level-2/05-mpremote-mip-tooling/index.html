@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://sigilipelli.github.io/embedded-python-mastery-path/level-1/01-micropython-vs-python/">
+        <link rel="canonical" href="https://sigilipelli.github.io/embedded-python-mastery-path/level-2/05-mpremote-mip-tooling/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../04-custom-sensor-drivers/">
       
       
-        <link rel="next" href="../02-repl-workflow/">
+        <link rel="next" href="../06-ntp-rtc-timekeeping/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>01 · MicroPython vs. Python - Embedded Python Mastery Path</title>
+        <title>mpremote & mip — Tooling Deep Dive - Embedded Python Mastery Path</title>
       
     
     
@@ -64,11 +64,11 @@
   
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Embedded Python Mastery Path">
-  <meta property="og:title" content="01 · MicroPython vs. Python">
+  <meta property="og:title" content="mpremote & mip — Tooling Deep Dive">
   <meta property="og:description" content="A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first, every example runnable in the Wokwi online simulator.">
-  <meta property="og:url" content="https://sigilipelli.github.io/embedded-python-mastery-path/level-1/01-micropython-vs-python/">
+  <meta property="og:url" content="https://sigilipelli.github.io/embedded-python-mastery-path/level-2/05-mpremote-mip-tooling/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="01 · MicroPython vs. Python">
+  <meta name="twitter:title" content="mpremote & mip — Tooling Deep Dive">
   <meta name="twitter:description" content="A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first, every example runnable in the Wokwi online simulator.">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9440969811959397"
      crossorigin="anonymous"></script>
@@ -92,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#01-micropython-vs-python" class="md-skip">
+        <a href="#mpremote-mip-tooling-deep-dive" class="md-skip">
           Skip to content
         </a>
       
@@ -126,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              01 · MicroPython vs. Python
+              mpremote & mip — Tooling Deep Dive
             
           </span>
         </div>
@@ -275,13 +275,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../level-1/" class="md-tabs__link">
           
   
   
@@ -299,11 +297,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../level-2/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -420,6 +420,380 @@
       
   
   
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 1 · Entry
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 1 · Entry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/01-micropython-vs-python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · MicroPython vs. Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/02-repl-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · REPL & Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/03-gpio-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · GPIO Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/04-pwm-adc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · PWM & ADC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/05-timers-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Timers & Interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/06-i2c-spi-sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · I2C & SPI Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/07-files-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Files & Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/08-wifi-http/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · WiFi & HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/09-uasyncio-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · uasyncio Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/10-capstone-wifi-sensor-logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Capstone — WiFi Sensor Logger
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -467,7 +841,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -478,7 +852,7 @@
   <span class="md-ellipsis">
     
   
-    Level 1 · Entry
+    Level 2 · Intermediate
   
 
     
@@ -489,23 +863,135 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Level 1 · Entry
+    Level 2 · Intermediate
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-mqtt-iot-messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MQTT & IoT Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-ble-aioble/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLE with aioble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-deep-sleep-battery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Sleep & Battery Power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-custom-sensor-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing Custom Sensor Drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -531,7 +1017,7 @@
   <span class="md-ellipsis">
     
   
-    01 · MicroPython vs. Python
+    mpremote & mip — Tooling Deep Dive
   
 
     
@@ -549,7 +1035,7 @@
   <span class="md-ellipsis">
     
   
-    01 · MicroPython vs. Python
+    mpremote & mip — Tooling Deep Dive
   
 
     
@@ -575,10 +1061,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#same-language-much-smaller-world" class="md-nav__link">
+  <a href="#mpremote-command-set" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Same language, much smaller world
+        mpremote command set
       
     </span>
   </a>
@@ -586,10 +1072,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#boards-that-run-micropython" class="md-nav__link">
+  <a href="#mounting-a-local-directory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Boards that run MicroPython
+        Mounting a local directory
       
     </span>
   </a>
@@ -597,10 +1083,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circuitpython-in-brief" class="md-nav__link">
+  <a href="#automating-a-flash-and-test-loop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CircuitPython, in brief
+        Automating a flash-and-test loop
       
     </span>
   </a>
@@ -608,10 +1094,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-micropython-onto-a-real-board" class="md-nav__link">
+  <a href="#installing-packages-with-mip" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting MicroPython onto a real board
+        Installing packages with mip
       
     </span>
   </a>
@@ -619,10 +1105,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-zero-hardware-path-wokwi" class="md-nav__link">
+  <a href="#tooling-gotchas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The zero-hardware path: Wokwi
+        Tooling gotchas
       
     </span>
   </a>
@@ -667,493 +1153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-repl-workflow/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    02 · REPL & Workflow
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-gpio-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    03 · GPIO Basics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-pwm-adc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    04 · PWM & ADC
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../05-timers-interrupts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    05 · Timers & Interrupts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../06-i2c-spi-sensors/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    06 · I2C & SPI Sensors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../07-files-persistence/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    07 · Files & Persistence
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-wifi-http/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    08 · WiFi & HTTP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../09-uasyncio-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    09 · uasyncio Basics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../10-capstone-wifi-sensor-logger/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    10 · Capstone — WiFi Sensor Logger
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="../../level-2/" class="md-nav__link ">
-              
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Level 2 · Intermediate
-  
-
-    
-  </span>
-  
-  
-
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Level 2 · Intermediate
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/01-mqtt-iot-messaging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MQTT & IoT Messaging
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/02-ble-aioble/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    BLE with aioble
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/03-deep-sleep-battery/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deep Sleep & Battery Power
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/04-custom-sensor-drivers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Writing Custom Sensor Drivers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/05-mpremote-mip-tooling/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    mpremote & mip — Tooling Deep Dive
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/06-ntp-rtc-timekeeping/" class="md-nav__link">
+      <a href="../06-ntp-rtc-timekeeping/" class="md-nav__link">
         
   
   
@@ -1181,7 +1181,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/07-neopixels-displays-ui/" class="md-nav__link">
+      <a href="../07-neopixels-displays-ui/" class="md-nav__link">
         
   
   
@@ -1209,7 +1209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/08-espnow-peer-to-peer/" class="md-nav__link">
+      <a href="../08-espnow-peer-to-peer/" class="md-nav__link">
         
   
   
@@ -1237,7 +1237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/09-error-handling-logging/" class="md-nav__link">
+      <a href="../09-error-handling-logging/" class="md-nav__link">
         
   
   
@@ -1265,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/10-project-mqtt-weather-station/" class="md-nav__link">
+      <a href="../10-project-mqtt-weather-station/" class="md-nav__link">
         
   
   
@@ -1320,10 +1320,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#same-language-much-smaller-world" class="md-nav__link">
+  <a href="#mpremote-command-set" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Same language, much smaller world
+        mpremote command set
       
     </span>
   </a>
@@ -1331,10 +1331,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#boards-that-run-micropython" class="md-nav__link">
+  <a href="#mounting-a-local-directory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Boards that run MicroPython
+        Mounting a local directory
       
     </span>
   </a>
@@ -1342,10 +1342,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circuitpython-in-brief" class="md-nav__link">
+  <a href="#automating-a-flash-and-test-loop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CircuitPython, in brief
+        Automating a flash-and-test loop
       
     </span>
   </a>
@@ -1353,10 +1353,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-micropython-onto-a-real-board" class="md-nav__link">
+  <a href="#installing-packages-with-mip" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting MicroPython onto a real board
+        Installing packages with mip
       
     </span>
   </a>
@@ -1364,10 +1364,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-zero-hardware-path-wokwi" class="md-nav__link">
+  <a href="#tooling-gotchas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The zero-hardware path: Wokwi
+        Tooling gotchas
       
     </span>
   </a>
@@ -1416,211 +1416,197 @@
   
 
 
-<h1 id="01-micropython-vs-python">01 · MicroPython vs. Python<a class="headerlink" href="#01-micropython-vs-python" title="Permanent link">&para;</a></h1>
-<p>MicroPython is a lean reimplementation of Python 3 that runs <em>directly on a
-microcontroller</em> — no operating system, no gigabytes of RAM, just your code,
-an interpreter, and the chip's registers. You write ordinary Python syntax
-(<code>def</code>, <code>class</code>, <code>try/except</code>, list comprehensions, f-strings all work), but
-the runtime fits in a few hundred kilobytes and starts in milliseconds. This
-module maps out what's the same, what's missing, what's <em>added</em>, which boards
-run it, and how to start writing code in the next five minutes without buying
-any hardware.</p>
-<h2 id="same-language-much-smaller-world">Same language, much smaller world<a class="headerlink" href="#same-language-much-smaller-world" title="Permanent link">&para;</a></h2>
-<p>MicroPython implements the Python 3.4 core language (with many newer
-features, like f-strings and <code>async</code>/<code>await</code>, added since). The differences
-are almost all about <em>scale</em>:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>CPython (desktop)</th>
-<th>MicroPython (ESP32)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RAM available to your code</td>
-<td>gigabytes</td>
-<td>~100 KB</td>
-</tr>
-<tr>
-<td>Storage</td>
-<td>SSD/HDD, terabytes</td>
-<td>~2 MB flash filesystem</td>
-</tr>
-<tr>
-<td>Standard library</td>
-<td>~300 modules</td>
-<td>a curated subset (~30 built in)</td>
-</tr>
-<tr>
-<td>Package install</td>
-<td><code>pip</code> from PyPI</td>
-<td><code>mip</code> from micropython-lib</td>
-</tr>
-<tr>
-<td>Integers</td>
-<td>arbitrary precision</td>
-<td>arbitrary precision (same!)</td>
-</tr>
-<tr>
-<td>Threads/processes</td>
-<td>full support</td>
-<td>limited; <code>uasyncio</code> preferred</td>
-</tr>
-<tr>
-<td>Startup</td>
-<td>interpreter on an OS</td>
-<td><em>is</em> the whole system, boots in ms</td>
-</tr>
-</tbody>
-</table>
-<p>The subset stdlib is the biggest day-one surprise. There is no <code>pandas</code>, no
-<code>tkinter</code>, no <code>subprocess</code> — but there is <code>json</code>, <code>os</code>, <code>sys</code>, <code>time</code>,
-<code>struct</code>, <code>math</code>, <code>random</code>, <code>re</code> (simplified), and <code>socket</code>. Historically the
-trimmed modules had <code>u</code>-prefixed names (<code>ujson</code>, <code>uos</code>, <code>utime</code>); modern
-MicroPython exposes them under the standard names, and you'll still see the
-<code>u</code> names in older tutorials — both work.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">implementation</span><span class="p">)</span>   <span class="c1"># (name=&#39;micropython&#39;, version=(1, 22, ...), ...)</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>         <span class="c1"># &#39;esp32&#39;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ujson</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>          <span class="c1"># same module, two names</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">json</span> <span class="ow">is</span> <span class="n">ujson</span><span class="p">)</span>        <span class="c1"># True</span>
+<h1 id="mpremote-mip-tooling-deep-dive">mpremote &amp; mip — Tooling Deep Dive<a class="headerlink" href="#mpremote-mip-tooling-deep-dive" title="Permanent link">&para;</a></h1>
+<p>Level 1 introduced <code>mpremote</code> and <code>mip</code> at a survival level. This module is
+the deep dive: the full <code>mpremote</code> command set (mount, run, filesystem,
+scripted REPL), installing packages from GitHub as well as
+micropython-lib, and automating a flash-and-test loop so you're not
+manually copy-pasting code into a REPL all day. <code>mpremote</code> commands are
+demonstrated as shell/CLI usage — install it locally with
+<code>pip install mpremote</code> to run these against real hardware; there's no
+Wokwi equivalent for host-side tooling.</p>
+<h2 id="mpremote-command-set"><code>mpremote</code> command set<a class="headerlink" href="#mpremote-command-set" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># List connected boards</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mpremote<span class="w"> </span>connect<span class="w"> </span>list
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Open an interactive REPL (Ctrl-] to exit)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>mpremote
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run a local script on the board without copying it to flash</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>mpremote<span class="w"> </span>run<span class="w"> </span>main.py
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Copy files to/from the board&#39;s filesystem</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>mpremote<span class="w"> </span>cp<span class="w"> </span>main.py<span class="w"> </span>:main.py
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>mpremote<span class="w"> </span>cp<span class="w"> </span>:data.json<span class="w"> </span>./data.json
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># List files on the board</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>mpremote<span class="w"> </span>fs<span class="w"> </span>ls
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>mpremote<span class="w"> </span>fs<span class="w"> </span>ls<span class="w"> </span>:/lib
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># Remove a file</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>mpremote<span class="w"> </span>fs<span class="w"> </span>rm<span class="w"> </span>:old_config.json
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1"># Chain commands with +</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>mpremote<span class="w"> </span>connect<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span>+<span class="w"> </span>run<span class="w"> </span>test_sensor.py<span class="w"> </span>+<span class="w"> </span>repl
 </code></pre></div>
-<p>What MicroPython <em>adds</em> is the interesting part — modules that don't exist on
-the desktop because desktops don't have pins:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">machine</span>     <span class="c1"># Pin, PWM, ADC, I2C, SPI, UART, Timer, RTC, deepsleep...</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">network</span>     <span class="c1"># WLAN — connect the chip itself to WiFi</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">micropython</span> <span class="c1"># interpreter controls: const(), mem_info(), schedule()</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>          <span class="c1"># the garbage collector, which you WILL meet on 100 KB</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">mem_free</span><span class="p">())</span>   <span class="c1"># e.g. 108816 — bytes of heap left. Budget it.</span>
+<p>The <code>:</code> prefix means "on the board's filesystem" — <code>mpremote cp main.py
+:main.py</code> copies local <code>main.py</code> to the board's root as <code>main.py</code>;
+<code>mpremote fs ls :/lib</code> lists the board's <code>/lib</code> directory. Chaining with
+<code>+</code> runs several steps in one invocation, ending in <code>repl</code> to drop into an
+interactive session right after — handy for "flash it, then watch what it
+prints."</p>
+<h2 id="mounting-a-local-directory">Mounting a local directory<a class="headerlink" href="#mounting-a-local-directory" title="Permanent link">&para;</a></h2>
+<p><code>mpremote mount</code> makes a directory on your computer show up as the
+board's filesystem <em>live</em>, no copying:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mpremote<span class="w"> </span>mount<span class="w"> </span>./src<span class="w"> </span>repl
 </code></pre></div>
-<p>That last line captures the mindset shift: on the desktop you never think
-about a 100-item list; on a microcontroller, building a big string in a loop
-can genuinely exhaust memory. Level 3 goes deep on this; for now just know
-<code>gc.mem_free()</code> exists.</p>
-<h2 id="boards-that-run-micropython">Boards that run MicroPython<a class="headerlink" href="#boards-that-run-micropython" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>ESP32</strong> (our primary board) — dual-core 240 MHz, WiFi + Bluetooth,
-  ~$5. The best all-rounder and what Wokwi simulates.</li>
-<li><strong>Raspberry Pi Pico / Pico W (RP2040)</strong> — 133 MHz dual-core, famous for
-  the PIO programmable-I/O blocks (a Level 3 topic). Same MicroPython API;
-  mostly just different pin numbers.</li>
-<li><strong>ESP8266</strong> — the ESP32's older, smaller sibling; runs MicroPython but
-  with tight RAM.</li>
-<li><strong>Pyboard (STM32)</strong> — the original MicroPython board.</li>
-</ul>
-<p>Code in this course is ESP32-flavored (pin numbers, <code>ADC.atten()</code>), and we
-flag the places where the Pico differs.</p>
-<h2 id="circuitpython-in-brief">CircuitPython, in brief<a class="headerlink" href="#circuitpython-in-brief" title="Permanent link">&para;</a></h2>
-<p><strong>CircuitPython</strong> is Adafruit's friendly fork of MicroPython. Same language,
-different hardware API: instead of <code>machine.Pin(2, Pin.OUT)</code> you write
-<code>digitalio.DigitalInOut(board.LED)</code>, and the board mounts as a USB drive —
-you copy <code>code.py</code> onto it and it just runs. It's a lovely beginner
-experience with huge driver support for Adafruit's sensors, but it drops some
-MicroPython features (like <code>machine</code>, <code>_thread</code>, and interrupt handlers).
-Everything conceptual in this course transfers; the API names don't. We stick
-with upstream MicroPython because it's what Wokwi simulates and what
-production ESP32 work typically uses.</p>
-<h2 id="getting-micropython-onto-a-real-board">Getting MicroPython onto a real board<a class="headerlink" href="#getting-micropython-onto-a-real-board" title="Permanent link">&para;</a></h2>
-<p>A fresh ESP32 ships with no Python on it — you flash the MicroPython
-<em>firmware</em> (a <code>.bin</code> file from
-<a href="https://micropython.org/download/">micropython.org/download</a>) once, and from
-then on the board speaks Python over USB. The tool is <code>esptool</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>esptool
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># 1. wipe the flash (once, recommended for a new board)</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>esptool.py<span class="w"> </span>--port<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span>erase_flash
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 2. write the MicroPython firmware</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>esptool.py<span class="w"> </span>--port<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span>--baud<span class="w"> </span><span class="m">460800</span><span class="w"> </span>write_flash<span class="w"> </span>0x1000<span class="w"> </span>ESP32_GENERIC-20240602-v1.23.0.bin
+<p>Edit a <code>.py</code> file in <code>./src</code> on your laptop, <code>import</code> it (or reset the
+board) inside the mounted REPL, and it reads the current version straight
+off your disk — the fastest edit-test loop available, at the cost of
+running noticeably slower than code actually flashed to the board (every
+file access crosses the serial link). Good for development; copy files to
+flash (<code>mpremote cp</code>) before doing anything performance-sensitive or
+before disconnecting the board from your computer.</p>
+<h2 id="automating-a-flash-and-test-loop">Automating a flash-and-test loop<a class="headerlink" href="#automating-a-flash-and-test-loop" title="Permanent link">&para;</a></h2>
+<p>A small shell script that copies a whole project directory to a board and
+then runs its test entry point:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="ch">#!/bin/sh</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># deploy.sh — copy project files, then run tests, then drop to REPL</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">set</span><span class="w"> </span>-e
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>mpremote<span class="w"> </span>cp<span class="w"> </span>main.py<span class="w"> </span>:main.py
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>mpremote<span class="w"> </span>cp<span class="w"> </span>config.py<span class="w"> </span>:config.py
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>mpremote<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>lib/<span class="w"> </span>:lib/
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>mpremote<span class="w"> </span>run<span class="w"> </span>test_hardware.py
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>mpremote<span class="w"> </span>reset
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>mpremote<span class="w"> </span>repl
 </code></pre></div>
-<p>On Windows the port looks like <code>COM3</code>; on macOS like <code>/dev/tty.usbserial-0001</code>.
-The Raspberry Pi Pico is even easier: hold BOOTSEL while plugging in, and
-drag a <code>.uf2</code> file onto the USB drive that appears. Flashing is a one-time
-setup step — afterwards you only ever copy <code>.py</code> files around (module 2).</p>
-<h2 id="the-zero-hardware-path-wokwi">The zero-hardware path: Wokwi<a class="headerlink" href="#the-zero-hardware-path-wokwi" title="Permanent link">&para;</a></h2>
-<p>You don't need a board for any of Level 1. <a href="https://wokwi.com/">Wokwi</a> is a
-free browser-based simulator with first-class MicroPython support:</p>
-<ol>
-<li>Go to <a href="https://wokwi.com/">wokwi.com</a>, click <strong>New Project</strong>.</li>
-<li>Choose <strong>MicroPython on ESP32</strong> from the starter templates.</li>
-<li>You get a code editor (<code>main.py</code>), a virtual ESP32, and a play button.</li>
-</ol>
-<p>Press play and the on-screen serial console <em>is</em> a live Python REPL on the
-simulated chip. Try it right now with a first program:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># main.py — runs on the simulated ESP32 in Wokwi</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from MicroPython!&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;platform:&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;free heap:&quot;</span><span class="p">,</span> <span class="n">gc</span><span class="o">.</span><span class="n">mem_free</span><span class="p">(),</span> <span class="s2">&quot;bytes&quot;</span><span class="p">)</span>
+<p><code>mpremote cp -r</code> copies a directory recursively. <code>mpremote reset</code> performs
+a soft reset (re-runs <code>boot.py</code>/<code>main.py</code> from flash) — useful right after
+deploying so the board boots into the newly-copied code before you attach
+the REPL to watch it.</p>
+<h2 id="installing-packages-with-mip">Installing packages with <code>mip</code><a class="headerlink" href="#installing-packages-with-mip" title="Permanent link">&para;</a></h2>
+<p>From micropython-lib, by package name:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">mip</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">mip</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">&quot;umqtt.simple&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">mip</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">&quot;aioble&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>You can add virtual parts (LEDs, buttons, DHT22 sensors, OLED displays) from
-the <strong>+</strong> button in the diagram pane and wire them with drag-and-drop —
-every later module tells you exactly what to add. The same code runs
-unchanged on a real ESP32.</p>
+<p>From an arbitrary GitHub path — a single file or a whole package
+directory:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">mip</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">&quot;github:org/repo/path/to/module.py&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">mip</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">&quot;github:org/repo/path/to/package&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><code>mip</code> needs the board online (it fetches over HTTP), and it installs into
+<code>/lib</code> by default. Running <code>mip.install(...)</code> from your computer's Python
+(not the board) targets a <em>local</em> directory instead — useful for
+vendoring dependencies into a project you'll <code>mpremote cp</code> wholesale:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>mpremote<span class="w"> </span>mip<span class="w"> </span>install<span class="w"> </span>--target<span class="w"> </span>./lib<span class="w"> </span>umqtt.simple
+</code></pre></div>
+<p>That's the CLI form of <code>mip</code>, run entirely from your machine, writing
+files to <code>./lib</code> on disk rather than talking to a connected board at all
+— pair it with <code>mpremote cp -r lib/ :lib/</code> in the deploy script above.</p>
+<h2 id="tooling-gotchas">Tooling gotchas<a class="headerlink" href="#tooling-gotchas" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title"><code>mpremote run</code> doesn't persist the script</p>
+<p><code>mpremote run file.py</code> executes the file on the board's RAM and
+doesn't save it — reset the board and it's gone. For code that should
+survive a power cycle, <code>mpremote cp</code> it to <code>main.py</code> (or import it
+from <code>main.py</code>).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Serial port contention</p>
+<p>Only one process can hold the board's serial port at a time. A REPL
+left open in one terminal blocks <code>mpremote cp</code> from a second terminal
+with a cryptic "could not enter raw repl" or "port busy" error. Close
+other connections (including the IDE's built-in serial monitor)
+before scripting <code>mpremote</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title"><code>mount</code> is slow and fragile across a bad USB cable/hub</p>
+<p>Because every file read crosses the wire live, a marginal USB
+connection that would tolerate simple <code>cp</code> operations can produce
+intermittent <code>OSError</code>s under <code>mount</code>. If a mounted session gets
+flaky, fall back to <code>cp</code>-and-reset for anything beyond quick
+iteration.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title"><code>mip.install</code> overwrites without asking</p>
+<p>Re-running <code>mip.install("package")</code> silently replaces whatever's in
+<code>/lib/package</code> — including any local edits you made to a previously
+installed driver. Keep hand-edited vendor code outside <code>/lib</code>, or
+rename it, so a future <code>mip.install</code> doesn't clobber your changes.</p>
+</div>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Concept</th>
-<th>The short version</th>
+<th>Command</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>MicroPython</td>
-<td>Python 3 reimplemented to run on microcontrollers in ~256 KB</td>
+<td><code>mpremote connect list</code></td>
+<td>List connected boards/ports</td>
 </tr>
 <tr>
-<td>stdlib</td>
-<td>Subset: <code>json</code>, <code>os</code>, <code>time</code>, <code>struct</code>, <code>socket</code>... — no big desktop libs</td>
+<td><code>mpremote</code></td>
+<td>Open interactive REPL</td>
 </tr>
 <tr>
-<td><code>u</code>-modules</td>
-<td>Old names (<code>ujson</code>, <code>utime</code>) — now aliases for the plain names</td>
+<td><code>mpremote run file.py</code></td>
+<td>Execute a local file on-board, in RAM only</td>
 </tr>
 <tr>
-<td><code>machine</code> module</td>
-<td>The hardware API: <code>Pin</code>, <code>PWM</code>, <code>ADC</code>, <code>I2C</code>, <code>SPI</code>, <code>Timer</code></td>
+<td><code>mpremote cp file.py :file.py</code></td>
+<td>Copy a file to the board's filesystem</td>
 </tr>
 <tr>
-<td><code>gc.mem_free()</code></td>
-<td>Bytes of heap remaining — memory is a real budget here</td>
+<td><code>mpremote cp -r dir/ :dir/</code></td>
+<td>Copy a directory recursively</td>
 </tr>
 <tr>
-<td>Boards</td>
-<td>ESP32 (primary), Raspberry Pi Pico (RP2040), ESP8266, Pyboard</td>
+<td><code>mpremote fs ls [:path]</code></td>
+<td>List files on the board</td>
 </tr>
 <tr>
-<td>CircuitPython</td>
-<td>Adafruit fork: <code>board</code>/<code>digitalio</code> API, USB-drive workflow, no <code>machine</code></td>
+<td><code>mpremote fs rm :file</code></td>
+<td>Delete a file on the board</td>
 </tr>
 <tr>
-<td>Firmware flashing</td>
-<td>Once per board: <code>esptool.py write_flash 0x1000 firmware.bin</code> (ESP32)</td>
+<td><code>mpremote mount ./dir</code></td>
+<td>Live-mount a local dir as the board's filesystem</td>
 </tr>
 <tr>
-<td>Zero hardware</td>
-<td>Wokwi → New Project → <strong>MicroPython on ESP32</strong> — free, in-browser</td>
+<td><code>mpremote reset</code></td>
+<td>Soft reset — re-runs flash code</td>
 </tr>
 <tr>
-<td>Package install</td>
-<td><code>mip</code> (on-device) from micropython-lib, not <code>pip</code></td>
+<td><code>a + b + c</code> (chained)</td>
+<td>Run several <code>mpremote</code> steps in one call</td>
+</tr>
+<tr>
+<td><code>mip.install("name")</code> (on-board)</td>
+<td>Install from micropython-lib/GitHub to <code>/lib</code></td>
+</tr>
+<tr>
+<td><code>mpremote mip install --target ./lib name</code></td>
+<td>Install to a local dir from your computer</td>
 </tr>
 </tbody>
 </table>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
-<p>Create a Wokwi <em>MicroPython on ESP32</em> project and write a <code>main.py</code> that
-prints: (1) <code>sys.platform</code> and <code>sys.implementation.version</code>, (2) the free
-heap from <code>gc.mem_free()</code>, then (3) builds a list of 1,000 integers, calls
-<code>gc.collect()</code>, and prints the free heap again. How many bytes did 1,000
-small ints cost? Then try <code>import this</code> and <code>import tkinter</code> — one works,
-one raises <code>ImportError</code>. Finally, use <code>dir(machine)</code> to list everything the
-hardware module offers and spot the class names you'll meet in modules 3–5
-(<code>Pin</code>, <code>PWM</code>, <code>ADC</code>, <code>Timer</code>, <code>I2C</code>).</p>
+<p>Write a <code>deploy.sh</code> shell script (as shown above, adapted) that: copies a
+project's <code>main.py</code>, <code>config.py</code>, and a <code>lib/</code> directory to a connected
+board; runs a <code>test_hardware.py</code> script via <code>mpremote run</code> (writing a
+minimal stub that just prints <code>"self-test OK"</code> is fine); performs a soft
+reset; then drops into the REPL so you can watch boot output. Add a second
+script, <code>vendor.sh</code>, that uses <code>mpremote mip install --target ./lib</code> to
+fetch <code>umqtt.simple</code> and <code>umqtt.robust</code> into a local <code>lib/</code> directory
+without touching a connected board, so <code>deploy.sh</code> can then copy them over
+in one shot. Note in a comment which of the two scripts needs a board
+attached and which doesn't.</p>
 
 
 

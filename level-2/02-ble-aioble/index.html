@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://sigilipelli.github.io/embedded-python-mastery-path/level-1/01-micropython-vs-python/">
+        <link rel="canonical" href="https://sigilipelli.github.io/embedded-python-mastery-path/level-2/02-ble-aioble/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../01-mqtt-iot-messaging/">
       
       
-        <link rel="next" href="../02-repl-workflow/">
+        <link rel="next" href="../03-deep-sleep-battery/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>01 · MicroPython vs. Python - Embedded Python Mastery Path</title>
+        <title>BLE with aioble - Embedded Python Mastery Path</title>
       
     
     
@@ -64,11 +64,11 @@
   
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Embedded Python Mastery Path">
-  <meta property="og:title" content="01 · MicroPython vs. Python">
+  <meta property="og:title" content="BLE with aioble">
   <meta property="og:description" content="A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first, every example runnable in the Wokwi online simulator.">
-  <meta property="og:url" content="https://sigilipelli.github.io/embedded-python-mastery-path/level-1/01-micropython-vs-python/">
+  <meta property="og:url" content="https://sigilipelli.github.io/embedded-python-mastery-path/level-2/02-ble-aioble/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="01 · MicroPython vs. Python">
+  <meta name="twitter:title" content="BLE with aioble">
   <meta name="twitter:description" content="A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first, every example runnable in the Wokwi online simulator.">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9440969811959397"
      crossorigin="anonymous"></script>
@@ -92,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#01-micropython-vs-python" class="md-skip">
+        <a href="#ble-with-aioble" class="md-skip">
           Skip to content
         </a>
       
@@ -126,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              01 · MicroPython vs. Python
+              BLE with aioble
             
           </span>
         </div>
@@ -275,13 +275,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../level-1/" class="md-tabs__link">
           
   
   
@@ -299,11 +297,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../level-2/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -420,6 +420,380 @@
       
   
   
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 1 · Entry
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 1 · Entry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/01-micropython-vs-python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · MicroPython vs. Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/02-repl-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · REPL & Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/03-gpio-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · GPIO Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/04-pwm-adc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · PWM & ADC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/05-timers-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Timers & Interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/06-i2c-spi-sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · I2C & SPI Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/07-files-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Files & Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/08-wifi-http/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · WiFi & HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/09-uasyncio-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · uasyncio Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/10-capstone-wifi-sensor-logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Capstone — WiFi Sensor Logger
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -467,7 +841,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -478,7 +852,7 @@
   <span class="md-ellipsis">
     
   
-    Level 1 · Entry
+    Level 2 · Intermediate
   
 
     
@@ -489,23 +863,51 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Level 1 · Entry
+    Level 2 · Intermediate
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-mqtt-iot-messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MQTT & IoT Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -531,7 +933,7 @@
   <span class="md-ellipsis">
     
   
-    01 · MicroPython vs. Python
+    BLE with aioble
   
 
     
@@ -549,7 +951,7 @@
   <span class="md-ellipsis">
     
   
-    01 · MicroPython vs. Python
+    BLE with aioble
   
 
     
@@ -575,10 +977,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#same-language-much-smaller-world" class="md-nav__link">
+  <a href="#gatt-concepts-in-60-seconds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Same language, much smaller world
+        GATT concepts in 60 seconds
       
     </span>
   </a>
@@ -586,10 +988,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#boards-that-run-micropython" class="md-nav__link">
+  <a href="#advertising-a-device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Boards that run MicroPython
+        Advertising a device
       
     </span>
   </a>
@@ -597,10 +999,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circuitpython-in-brief" class="md-nav__link">
+  <a href="#notifying-characteristic-updates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CircuitPython, in brief
+        Notifying characteristic updates
       
     </span>
   </a>
@@ -608,10 +1010,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-micropython-onto-a-real-board" class="md-nav__link">
+  <a href="#running-advertise-and-sensor-tasks-together" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting MicroPython onto a real board
+        Running advertise and sensor tasks together
       
     </span>
   </a>
@@ -619,10 +1021,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-zero-hardware-path-wokwi" class="md-nav__link">
+  <a href="#aiobleasyncio-gotchas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The zero-hardware path: Wokwi
+        aioble/asyncio gotchas
       
     </span>
   </a>
@@ -667,409 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-repl-workflow/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    02 · REPL & Workflow
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-gpio-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    03 · GPIO Basics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-pwm-adc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    04 · PWM & ADC
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../05-timers-interrupts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    05 · Timers & Interrupts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../06-i2c-spi-sensors/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    06 · I2C & SPI Sensors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../07-files-persistence/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    07 · Files & Persistence
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-wifi-http/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    08 · WiFi & HTTP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../09-uasyncio-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    09 · uasyncio Basics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../10-capstone-wifi-sensor-logger/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    10 · Capstone — WiFi Sensor Logger
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="../../level-2/" class="md-nav__link ">
-              
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Level 2 · Intermediate
-  
-
-    
-  </span>
-  
-  
-
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Level 2 · Intermediate
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/01-mqtt-iot-messaging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MQTT & IoT Messaging
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/02-ble-aioble/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    BLE with aioble
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../level-2/03-deep-sleep-battery/" class="md-nav__link">
+      <a href="../03-deep-sleep-battery/" class="md-nav__link">
         
   
   
@@ -1097,7 +1097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/04-custom-sensor-drivers/" class="md-nav__link">
+      <a href="../04-custom-sensor-drivers/" class="md-nav__link">
         
   
   
@@ -1125,7 +1125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/05-mpremote-mip-tooling/" class="md-nav__link">
+      <a href="../05-mpremote-mip-tooling/" class="md-nav__link">
         
   
   
@@ -1153,7 +1153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/06-ntp-rtc-timekeeping/" class="md-nav__link">
+      <a href="../06-ntp-rtc-timekeeping/" class="md-nav__link">
         
   
   
@@ -1181,7 +1181,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/07-neopixels-displays-ui/" class="md-nav__link">
+      <a href="../07-neopixels-displays-ui/" class="md-nav__link">
         
   
   
@@ -1209,7 +1209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/08-espnow-peer-to-peer/" class="md-nav__link">
+      <a href="../08-espnow-peer-to-peer/" class="md-nav__link">
         
   
   
@@ -1237,7 +1237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/09-error-handling-logging/" class="md-nav__link">
+      <a href="../09-error-handling-logging/" class="md-nav__link">
         
   
   
@@ -1265,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../level-2/10-project-mqtt-weather-station/" class="md-nav__link">
+      <a href="../10-project-mqtt-weather-station/" class="md-nav__link">
         
   
   
@@ -1320,10 +1320,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#same-language-much-smaller-world" class="md-nav__link">
+  <a href="#gatt-concepts-in-60-seconds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Same language, much smaller world
+        GATT concepts in 60 seconds
       
     </span>
   </a>
@@ -1331,10 +1331,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#boards-that-run-micropython" class="md-nav__link">
+  <a href="#advertising-a-device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Boards that run MicroPython
+        Advertising a device
       
     </span>
   </a>
@@ -1342,10 +1342,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circuitpython-in-brief" class="md-nav__link">
+  <a href="#notifying-characteristic-updates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CircuitPython, in brief
+        Notifying characteristic updates
       
     </span>
   </a>
@@ -1353,10 +1353,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-micropython-onto-a-real-board" class="md-nav__link">
+  <a href="#running-advertise-and-sensor-tasks-together" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting MicroPython onto a real board
+        Running advertise and sensor tasks together
       
     </span>
   </a>
@@ -1364,10 +1364,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-zero-hardware-path-wokwi" class="md-nav__link">
+  <a href="#aiobleasyncio-gotchas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The zero-hardware path: Wokwi
+        aioble/asyncio gotchas
       
     </span>
   </a>
@@ -1416,211 +1416,185 @@
   
 
 
-<h1 id="01-micropython-vs-python">01 · MicroPython vs. Python<a class="headerlink" href="#01-micropython-vs-python" title="Permanent link">&para;</a></h1>
-<p>MicroPython is a lean reimplementation of Python 3 that runs <em>directly on a
-microcontroller</em> — no operating system, no gigabytes of RAM, just your code,
-an interpreter, and the chip's registers. You write ordinary Python syntax
-(<code>def</code>, <code>class</code>, <code>try/except</code>, list comprehensions, f-strings all work), but
-the runtime fits in a few hundred kilobytes and starts in milliseconds. This
-module maps out what's the same, what's missing, what's <em>added</em>, which boards
-run it, and how to start writing code in the next five minutes without buying
-any hardware.</p>
-<h2 id="same-language-much-smaller-world">Same language, much smaller world<a class="headerlink" href="#same-language-much-smaller-world" title="Permanent link">&para;</a></h2>
-<p>MicroPython implements the Python 3.4 core language (with many newer
-features, like f-strings and <code>async</code>/<code>await</code>, added since). The differences
-are almost all about <em>scale</em>:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>CPython (desktop)</th>
-<th>MicroPython (ESP32)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RAM available to your code</td>
-<td>gigabytes</td>
-<td>~100 KB</td>
-</tr>
-<tr>
-<td>Storage</td>
-<td>SSD/HDD, terabytes</td>
-<td>~2 MB flash filesystem</td>
-</tr>
-<tr>
-<td>Standard library</td>
-<td>~300 modules</td>
-<td>a curated subset (~30 built in)</td>
-</tr>
-<tr>
-<td>Package install</td>
-<td><code>pip</code> from PyPI</td>
-<td><code>mip</code> from micropython-lib</td>
-</tr>
-<tr>
-<td>Integers</td>
-<td>arbitrary precision</td>
-<td>arbitrary precision (same!)</td>
-</tr>
-<tr>
-<td>Threads/processes</td>
-<td>full support</td>
-<td>limited; <code>uasyncio</code> preferred</td>
-</tr>
-<tr>
-<td>Startup</td>
-<td>interpreter on an OS</td>
-<td><em>is</em> the whole system, boots in ms</td>
-</tr>
-</tbody>
-</table>
-<p>The subset stdlib is the biggest day-one surprise. There is no <code>pandas</code>, no
-<code>tkinter</code>, no <code>subprocess</code> — but there is <code>json</code>, <code>os</code>, <code>sys</code>, <code>time</code>,
-<code>struct</code>, <code>math</code>, <code>random</code>, <code>re</code> (simplified), and <code>socket</code>. Historically the
-trimmed modules had <code>u</code>-prefixed names (<code>ujson</code>, <code>uos</code>, <code>utime</code>); modern
-MicroPython exposes them under the standard names, and you'll still see the
-<code>u</code> names in older tutorials — both work.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">implementation</span><span class="p">)</span>   <span class="c1"># (name=&#39;micropython&#39;, version=(1, 22, ...), ...)</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>         <span class="c1"># &#39;esp32&#39;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ujson</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>          <span class="c1"># same module, two names</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">json</span> <span class="ow">is</span> <span class="n">ujson</span><span class="p">)</span>        <span class="c1"># True</span>
-</code></pre></div>
-<p>What MicroPython <em>adds</em> is the interesting part — modules that don't exist on
-the desktop because desktops don't have pins:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">machine</span>     <span class="c1"># Pin, PWM, ADC, I2C, SPI, UART, Timer, RTC, deepsleep...</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">network</span>     <span class="c1"># WLAN — connect the chip itself to WiFi</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">micropython</span> <span class="c1"># interpreter controls: const(), mem_info(), schedule()</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>          <span class="c1"># the garbage collector, which you WILL meet on 100 KB</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">mem_free</span><span class="p">())</span>   <span class="c1"># e.g. 108816 — bytes of heap left. Budget it.</span>
-</code></pre></div>
-<p>That last line captures the mindset shift: on the desktop you never think
-about a 100-item list; on a microcontroller, building a big string in a loop
-can genuinely exhaust memory. Level 3 goes deep on this; for now just know
-<code>gc.mem_free()</code> exists.</p>
-<h2 id="boards-that-run-micropython">Boards that run MicroPython<a class="headerlink" href="#boards-that-run-micropython" title="Permanent link">&para;</a></h2>
+<h1 id="ble-with-aioble">BLE with aioble<a class="headerlink" href="#ble-with-aioble" title="Permanent link">&para;</a></h1>
+<p>WiFi isn't the only way an ESP32 talks to the world — <strong>Bluetooth Low
+Energy</strong> is the low-power, short-range option, ideal for a phone app
+reading a sensor or a wearable that needs to run for months on a coin
+cell. <code>aioble</code> is MicroPython's <code>asyncio</code>-based BLE library, wrapping the
+lower-level <code>bluetooth</code> module. This module advertises a device, exposes a
+GATT service/characteristic, sends notifications, and builds a
+phone-readable sensor beacon — reviewed against MicroPython's <code>aioble</code>
+docs and examples, since Wokwi's BLE simulation support is limited; verify
+final behavior on real hardware with the nRF Connect or LightBlue app.</p>
+<h2 id="gatt-concepts-in-60-seconds">GATT concepts in 60 seconds<a class="headerlink" href="#gatt-concepts-in-60-seconds" title="Permanent link">&para;</a></h2>
+<p>BLE data model, top to bottom:</p>
 <ul>
-<li><strong>ESP32</strong> (our primary board) — dual-core 240 MHz, WiFi + Bluetooth,
-  ~$5. The best all-rounder and what Wokwi simulates.</li>
-<li><strong>Raspberry Pi Pico / Pico W (RP2040)</strong> — 133 MHz dual-core, famous for
-  the PIO programmable-I/O blocks (a Level 3 topic). Same MicroPython API;
-  mostly just different pin numbers.</li>
-<li><strong>ESP8266</strong> — the ESP32's older, smaller sibling; runs MicroPython but
-  with tight RAM.</li>
-<li><strong>Pyboard (STM32)</strong> — the original MicroPython board.</li>
+<li><strong>Service</strong> — a group of related data, identified by a UUID (e.g. "this
+  is a temperature service").</li>
+<li><strong>Characteristic</strong> — one value inside a service (e.g. "the current
+  temperature reading"), also UUID-identified, with permissions (read,
+  write, notify).</li>
+<li><strong>Advertising</strong> — short broadcast packets a device sends before anyone
+  connects, so scanners can find it and see its name.</li>
 </ul>
-<p>Code in this course is ESP32-flavored (pin numbers, <code>ADC.atten()</code>), and we
-flag the places where the Pico differs.</p>
-<h2 id="circuitpython-in-brief">CircuitPython, in brief<a class="headerlink" href="#circuitpython-in-brief" title="Permanent link">&para;</a></h2>
-<p><strong>CircuitPython</strong> is Adafruit's friendly fork of MicroPython. Same language,
-different hardware API: instead of <code>machine.Pin(2, Pin.OUT)</code> you write
-<code>digitalio.DigitalInOut(board.LED)</code>, and the board mounts as a USB drive —
-you copy <code>code.py</code> onto it and it just runs. It's a lovely beginner
-experience with huge driver support for Adafruit's sensors, but it drops some
-MicroPython features (like <code>machine</code>, <code>_thread</code>, and interrupt handlers).
-Everything conceptual in this course transfers; the API names don't. We stick
-with upstream MicroPython because it's what Wokwi simulates and what
-production ESP32 work typically uses.</p>
-<h2 id="getting-micropython-onto-a-real-board">Getting MicroPython onto a real board<a class="headerlink" href="#getting-micropython-onto-a-real-board" title="Permanent link">&para;</a></h2>
-<p>A fresh ESP32 ships with no Python on it — you flash the MicroPython
-<em>firmware</em> (a <code>.bin</code> file from
-<a href="https://micropython.org/download/">micropython.org/download</a>) once, and from
-then on the board speaks Python over USB. The tool is <code>esptool</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>esptool
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># 1. wipe the flash (once, recommended for a new board)</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>esptool.py<span class="w"> </span>--port<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span>erase_flash
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 2. write the MicroPython firmware</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>esptool.py<span class="w"> </span>--port<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span>--baud<span class="w"> </span><span class="m">460800</span><span class="w"> </span>write_flash<span class="w"> </span>0x1000<span class="w"> </span>ESP32_GENERIC-20240602-v1.23.0.bin
+<p>Standard UUIDs exist for common types (<code>0x2A6E</code> is temperature); for
+custom data, generate a random 128-bit UUID so you don't collide with
+someone else's service.</p>
+<h2 id="advertising-a-device">Advertising a device<a class="headerlink" href="#advertising-a-device" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">aioble</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bluetooth</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">_ENV_SENSE_UUID</span> <span class="o">=</span> <span class="n">bluetooth</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="mh">0x181A</span><span class="p">)</span>          <span class="c1"># standard &quot;Environmental Sensing&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">_TEMP_CHAR_UUID</span> <span class="o">=</span> <span class="n">bluetooth</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="mh">0x2A6E</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">service</span> <span class="o">=</span> <span class="n">aioble</span><span class="o">.</span><span class="n">Service</span><span class="p">(</span><span class="n">_ENV_SENSE_UUID</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">temp_char</span> <span class="o">=</span> <span class="n">aioble</span><span class="o">.</span><span class="n">Characteristic</span><span class="p">(</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">service</span><span class="p">,</span> <span class="n">_TEMP_CHAR_UUID</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">True</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">aioble</span><span class="o">.</span><span class="n">register_services</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">advertise_task</span><span class="p">():</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="n">connection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioble</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>            <span class="mi">250_000</span><span class="p">,</span>                              <span class="c1"># advertising interval, microseconds</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;esp32-sensor&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>            <span class="n">services</span><span class="o">=</span><span class="p">[</span><span class="n">_ENV_SENSE_UUID</span><span class="p">],</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="p">)</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;connected:&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="k">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">disconnected</span><span class="p">()</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;disconnected&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">advertise_task</span><span class="p">())</span>
 </code></pre></div>
-<p>On Windows the port looks like <code>COM3</code>; on macOS like <code>/dev/tty.usbserial-0001</code>.
-The Raspberry Pi Pico is even easier: hold BOOTSEL while plugging in, and
-drag a <code>.uf2</code> file onto the USB drive that appears. Flashing is a one-time
-setup step — afterwards you only ever copy <code>.py</code> files around (module 2).</p>
-<h2 id="the-zero-hardware-path-wokwi">The zero-hardware path: Wokwi<a class="headerlink" href="#the-zero-hardware-path-wokwi" title="Permanent link">&para;</a></h2>
-<p>You don't need a board for any of Level 1. <a href="https://wokwi.com/">Wokwi</a> is a
-free browser-based simulator with first-class MicroPython support:</p>
-<ol>
-<li>Go to <a href="https://wokwi.com/">wokwi.com</a>, click <strong>New Project</strong>.</li>
-<li>Choose <strong>MicroPython on ESP32</strong> from the starter templates.</li>
-<li>You get a code editor (<code>main.py</code>), a virtual ESP32, and a play button.</li>
-</ol>
-<p>Press play and the on-screen serial console <em>is</em> a live Python REPL on the
-simulated chip. Try it right now with a first program:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># main.py — runs on the simulated ESP32 in Wokwi</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from MicroPython!&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;platform:&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;free heap:&quot;</span><span class="p">,</span> <span class="n">gc</span><span class="o">.</span><span class="n">mem_free</span><span class="p">(),</span> <span class="s2">&quot;bytes&quot;</span><span class="p">)</span>
+<p><code>aioble.advertise()</code> returns only once a <strong>central</strong> (the phone/scanner)
+connects — it's an <code>await</code>, not a fire-and-forget broadcast loop. After
+that connection drops, loop back and advertise again so the device is
+discoverable for the next connection.</p>
+<h2 id="notifying-characteristic-updates">Notifying characteristic updates<a class="headerlink" href="#notifying-characteristic-updates" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">sensor_task</span><span class="p">():</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="n">temp_c</span> <span class="o">=</span> <span class="n">read_temperature</span><span class="p">()</span>               <span class="c1"># your sensor code</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="c1"># Environmental Sensing temperature format: signed int16, x100</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="n">temp_char</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temp_c</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">temp_char</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </code></pre></div>
-<p>You can add virtual parts (LEDs, buttons, DHT22 sensors, OLED displays) from
-the <strong>+</strong> button in the diagram pane and wire them with drag-and-drop —
-every later module tells you exactly what to add. The same code runs
-unchanged on a real ESP32.</p>
+<p><code>write()</code> sets the value a <em>new</em> reader gets; <code>notify()</code> actively pushes
+the current value to anyone subscribed. Do both — a client that connects
+mid-stream reads the last value via <code>write()</code>; a client already connected
+gets pushed updates via <code>notify()</code>.</p>
+<h2 id="running-advertise-and-sensor-tasks-together">Running advertise and sensor tasks together<a class="headerlink" href="#running-advertise-and-sensor-tasks-together" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">advertise_and_wait</span><span class="p">():</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="k">nonlocal</span> <span class="n">connection</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="n">connection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioble</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>            <span class="mi">250_000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;esp32-sensor&quot;</span><span class="p">,</span> <span class="n">services</span><span class="o">=</span><span class="p">[</span><span class="n">_ENV_SENSE_UUID</span><span class="p">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="k">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">disconnected</span><span class="p">()</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_loop</span><span class="p">():</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="k">nonlocal</span> <span class="n">connection</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>            <span class="k">if</span> <span class="n">connection</span><span class="p">:</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>                <span class="n">temp_char</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">read_temperature</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                <span class="n">temp_char</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">advertise_and_wait</span><span class="p">(),</span> <span class="n">notify_loop</span><span class="p">())</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="aiobleasyncio-gotchas">aioble/asyncio gotchas<a class="headerlink" href="#aiobleasyncio-gotchas" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title"><code>notify()</code> before a connection exists raises <code>OSError</code></p>
+<p>Guard every <code>notify()</code> call with a connection check (as above). A
+common bug: starting the sensor loop immediately instead of waiting
+for <code>advertise()</code> to resolve, then crashing the whole <code>asyncio.run()</code>
+the moment the first reading is ready.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">One <code>asyncio.run()</code> per program</p>
+<p>Like uasyncio generally (Level 1, module 9), don't nest <code>asyncio.run()</code>
+calls or mix <code>await</code> outside an <code>async def</code>. Structure BLE + sensor +
+any other concurrent work as tasks under one <code>main()</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Advertising stops while connected</p>
+<p>A device that's already connected to one central is not advertising
+and won't be found by a second scanner. If you need multiple
+simultaneous clients, that's a different, more advanced BLE role
+(peripheral supporting multiple connections) — plan around
+one-connection-at-a-time unless you've confirmed your board's BLE
+stack supports more.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">GATT tables are built once, at startup</p>
+<p><code>aioble.register_services()</code> must be called before advertising, and
+the service/characteristic layout can't change afterward without a
+restart. Decide your data model before writing the advertise loop.</p>
+</div>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Concept</th>
-<th>The short version</th>
+<th>Function / idiom</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>MicroPython</td>
-<td>Python 3 reimplemented to run on microcontrollers in ~256 KB</td>
+<td><code>aioble.Service(uuid)</code></td>
+<td>Define a GATT service</td>
 </tr>
 <tr>
-<td>stdlib</td>
-<td>Subset: <code>json</code>, <code>os</code>, <code>time</code>, <code>struct</code>, <code>socket</code>... — no big desktop libs</td>
+<td><code>aioble.Characteristic(service, uuid, read=, notify=, write=)</code></td>
+<td>Define one value in a service</td>
 </tr>
 <tr>
-<td><code>u</code>-modules</td>
-<td>Old names (<code>ujson</code>, <code>utime</code>) — now aliases for the plain names</td>
+<td><code>aioble.register_services(service, ...)</code></td>
+<td>Finalize the GATT table before advertising</td>
 </tr>
 <tr>
-<td><code>machine</code> module</td>
-<td>The hardware API: <code>Pin</code>, <code>PWM</code>, <code>ADC</code>, <code>I2C</code>, <code>SPI</code>, <code>Timer</code></td>
+<td><code>await aioble.advertise(interval_us, name=, services=)</code></td>
+<td>Broadcast; resolves when a central connects</td>
 </tr>
 <tr>
-<td><code>gc.mem_free()</code></td>
-<td>Bytes of heap remaining — memory is a real budget here</td>
+<td><code>connection.disconnected()</code></td>
+<td>Await until the central drops</td>
 </tr>
 <tr>
-<td>Boards</td>
-<td>ESP32 (primary), Raspberry Pi Pico (RP2040), ESP8266, Pyboard</td>
+<td><code>char.write(bytes)</code></td>
+<td>Set the value future readers get</td>
 </tr>
 <tr>
-<td>CircuitPython</td>
-<td>Adafruit fork: <code>board</code>/<code>digitalio</code> API, USB-drive workflow, no <code>machine</code></td>
+<td><code>char.notify(connection)</code></td>
+<td>Push the current value to a subscribed client</td>
 </tr>
 <tr>
-<td>Firmware flashing</td>
-<td>Once per board: <code>esptool.py write_flash 0x1000 firmware.bin</code> (ESP32)</td>
+<td><code>bluetooth.UUID(0x181A)</code></td>
+<td>Standard 16-bit UUID; use random 128-bit for custom data</td>
 </tr>
 <tr>
-<td>Zero hardware</td>
-<td>Wokwi → New Project → <strong>MicroPython on ESP32</strong> — free, in-browser</td>
-</tr>
-<tr>
-<td>Package install</td>
-<td><code>mip</code> (on-device) from micropython-lib, not <code>pip</code></td>
+<td><code>asyncio.gather(task1(), task2())</code></td>
+<td>Run advertise + sensor loops concurrently</td>
 </tr>
 </tbody>
 </table>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
-<p>Create a Wokwi <em>MicroPython on ESP32</em> project and write a <code>main.py</code> that
-prints: (1) <code>sys.platform</code> and <code>sys.implementation.version</code>, (2) the free
-heap from <code>gc.mem_free()</code>, then (3) builds a list of 1,000 integers, calls
-<code>gc.collect()</code>, and prints the free heap again. How many bytes did 1,000
-small ints cost? Then try <code>import this</code> and <code>import tkinter</code> — one works,
-one raises <code>ImportError</code>. Finally, use <code>dir(machine)</code> to list everything the
-hardware module offers and spot the class names you'll meet in modules 3–5
-(<code>Pin</code>, <code>PWM</code>, <code>ADC</code>, <code>Timer</code>, <code>I2C</code>).</p>
+<p>Design a <strong>BLE sensor beacon</strong>: advertise as <code>"esp32-beacon"</code> with a
+custom 128-bit service UUID, exposing one notify-and-read characteristic
+carrying a JSON-encoded string (<code>temp</code>, <code>hum</code>, <code>uptime_s</code>). Run an
+<code>advertise_and_wait()</code> task and a <code>notify_loop()</code> task together with
+<code>asyncio.gather()</code>, updating the characteristic every 3 seconds only while
+a connection is live. Add a second, write-only characteristic that accepts
+a single byte (<code>0</code>/<code>1</code>) to toggle an onboard LED, with a task that reads
+new writes and applies them. Document (in comments) which real BLE scanner
+app you'd use to verify this on hardware, since Wokwi's BLE support won't
+run it end-to-end.</p>
 
 
 
