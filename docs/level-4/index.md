@@ -17,9 +17,3 @@ manufacturing.
 8. [CI, Emulation & Automated Testing](08-ci-automated-testing.md)
 9. [Manufacturing & Factory Test](09-manufacturing-factory-test.md)
 10. [Capstone — Production IoT Product](10-capstone-production-iot.md)
-
-!!! info "Content status"
-    Level 4 module content is being written — every page below has its
-    scope defined and will be filled in next. Levels
-    [1](../level-1/index.md)–[3](../level-3/index.md) are the prerequisite
-    path to this material.
