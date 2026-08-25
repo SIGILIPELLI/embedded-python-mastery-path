@@ -74,7 +74,27 @@ nav:
       - "ESP-NOW & Peer-to-Peer WiFi": level-2/08-espnow-peer-to-peer.md
       - "Error Handling & On-Device Logging": level-2/09-error-handling-logging.md
       - "Project — MQTT Weather Station": level-2/10-project-mqtt-weather-station.md
-# --- auto-pruned stub levels (see AdSense low-value-content fix) ---
-exclude_docs: |
-  level-3/*.md
-  level-4/*.md
+  - "Level 3 · Advanced":
+      - Overview: level-3/index.md
+      - "Memory Management & the Garbage Collector": level-3/01-memory-gc.md
+      - "Performance Profiling & Optimization": level-3/02-performance-profiling.md
+      - "Native & Viper Code Emitters": level-3/03-native-viper-emitters.md
+      - "Writing C Modules for MicroPython": level-3/04-c-modules.md
+      - "RP2040 PIO — Programmable I/O": level-3/05-rp2040-pio.md
+      - "Advanced uasyncio Patterns": level-3/06-advanced-uasyncio.md
+      - "The Inline Assembler": level-3/07-inline-assembler.md
+      - "Frozen Modules & Custom Manifests": level-3/08-frozen-modules-manifests.md
+      - "Threads & Dual-Core MicroPython": level-3/09-threads-dual-core.md
+      - "Project — High-Speed Data Acquisition": level-3/10-project-high-speed-daq.md
+  - "Level 4 · Master":
+      - Overview: level-4/index.md
+      - "Production Firmware Architecture": level-4/01-production-architecture.md
+      - "OTA Updates for MicroPython Fleets": level-4/02-ota-updates-fleets.md
+      - "Device Provisioning & Secrets Management": level-4/03-provisioning-secrets.md
+      - "Watchdogs, Brownout & Robustness Patterns": level-4/04-watchdogs-robustness.md
+      - "Custom Firmware Builds & Board Definitions": level-4/05-custom-firmware-builds.md
+      - "Security Hardening — TLS & Secure Storage": level-4/06-security-hardening.md
+      - "Fleet Management & Remote Monitoring": level-4/07-fleet-management.md
+      - "CI, Emulation & Automated Testing": level-4/08-ci-automated-testing.md
+      - "Manufacturing & Factory Test": level-4/09-manufacturing-factory-test.md
+      - "Capstone — Production IoT Product": level-4/10-capstone-production-iot.md
