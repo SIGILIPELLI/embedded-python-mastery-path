@@ -62,8 +62,19 @@ nav:
       - "08 · WiFi & HTTP": level-1/08-wifi-http.md
       - "09 · uasyncio Basics": level-1/09-uasyncio-basics.md
       - "10 · Capstone — WiFi Sensor Logger": level-1/10-capstone-wifi-sensor-logger.md
+  - "Level 2 · Intermediate":
+      - Overview: level-2/index.md
+      - "MQTT & IoT Messaging": level-2/01-mqtt-iot-messaging.md
+      - "BLE with aioble": level-2/02-ble-aioble.md
+      - "Deep Sleep & Battery Power": level-2/03-deep-sleep-battery.md
+      - "Writing Custom Sensor Drivers": level-2/04-custom-sensor-drivers.md
+      - "mpremote & mip — Tooling Deep Dive": level-2/05-mpremote-mip-tooling.md
+      - "NTP, RTC & Timekeeping": level-2/06-ntp-rtc-timekeeping.md
+      - "NeoPixels, Displays & Device UI": level-2/07-neopixels-displays-ui.md
+      - "ESP-NOW & Peer-to-Peer WiFi": level-2/08-espnow-peer-to-peer.md
+      - "Error Handling & On-Device Logging": level-2/09-error-handling-logging.md
+      - "Project — MQTT Weather Station": level-2/10-project-mqtt-weather-station.md
 # --- auto-pruned stub levels (see AdSense low-value-content fix) ---
 exclude_docs: |
-  level-2/*.md
   level-3/*.md
   level-4/*.md
