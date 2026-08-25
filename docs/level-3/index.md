@@ -17,9 +17,3 @@ async applications.
 8. [Frozen Modules & Custom Manifests](08-frozen-modules-manifests.md)
 9. [Threads & Dual-Core MicroPython](09-threads-dual-core.md)
 10. [Project — High-Speed Data Acquisition](10-project-high-speed-daq.md)
-
-!!! info "Content status"
-    Level 3 module content is being written — every page below has its
-    scope defined and will be filled in next. [Level 1](../level-1/index.md)
-    is complete; [Level 2](../level-2/index.md) modules are the prerequisite
-    for most topics here.
