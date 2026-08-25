@@ -2,54 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/privacy/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/01-micropython-vs-python/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/02-repl-workflow/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/03-gpio-basics/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/04-pwm-adc/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/05-timers-interrupts/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/06-i2c-spi-sensors/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/07-files-persistence/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/08-wifi-http/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/09-uasyncio-basics/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
     <url>
          <loc>https://sigilipelli.github.io/embedded-python-mastery-path/level-1/10-capstone-wifi-sensor-logger/</loc>
-         <lastmod>2026-07-31</lastmod>
+         <lastmod>2026-08-25</lastmod>
     </url>
 </urlset>
