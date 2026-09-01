@@ -16,7 +16,7 @@ changes, on the Raspberry Pi Pico).
 
 **Prerequisite:** basic Python — variables, functions, loops, classes,
 exceptions. If you're new to Python, do
-[Python Mastery Path — Level 1](https://sigilipelli.github.io/python-mastery-path/)
+[Python Mastery Path — Level 1](https://sigilipelli.github.io/python-skillmastery/)
 first; this level assumes it.
 
 ## Modules

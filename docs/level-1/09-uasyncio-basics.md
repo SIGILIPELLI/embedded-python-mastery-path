@@ -13,7 +13,7 @@ project.
 
 The C/C++ track solves "blink two LEDs at different rates" with the classic
 `millis()` pattern — one loop, per-task timestamp variables, and an `if`
-per task ([see the sibling lesson](https://sigilipelli.github.io/embedded-mastery-path/level-1/07-timers-interrupts/)).
+per task ([see the sibling lesson](https://sigilipelli.github.io/embedded-skillmastery/level-1/07-timers-interrupts/)).
 It works, but every added task multiplies the bookkeeping, and one slow
 step stalls the lot. Threads are heavy for a chip with ~100 KB of RAM.
 Cooperative coroutines hit the sweet spot: each task *reads* like the
