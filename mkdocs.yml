@@ -1,8 +1,8 @@
 site_name: Embedded Python Mastery Path
 site_description: A structured, module-wise MicroPython training program from entry level to master level — free, ESP32-first (with Raspberry Pi Pico notes), every example runnable in the free Wokwi online simulator, no hardware required.
-site_url: https://sigilipelli.github.io/embedded-python-skillmastery/
-repo_url: https://github.com/SIGILIPELLI/embedded-python-skillmastery
-repo_name: embedded-python-skillmastery
+site_url: https://sigilipelli.github.io/embedded-python-mastery-path/
+repo_url: https://github.com/SIGILIPELLI/embedded-python-mastery-path
+repo_name: embedded-python-mastery-path
 
 theme:
   name: material

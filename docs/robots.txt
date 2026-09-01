@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sigilipelli.github.io/embedded-python-skillmastery/sitemap.xml
+Sitemap: https://sigilipelli.github.io/embedded-python-mastery-path/sitemap.xml
