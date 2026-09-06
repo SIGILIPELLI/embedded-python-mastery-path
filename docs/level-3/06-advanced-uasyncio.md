@@ -220,6 +220,58 @@ once (an event, not a reading).
   desktop `asyncio` with hardware calls mocked out, exactly as done in
   the code above.
 
+## How It Actually Works
+
+`Event`, `Lock`, and `Queue` are not separate scheduling mechanisms — they
+are all thin bookkeeping layers built on top of the exact same
+single-generator-resume loop that Level 1 module 9 introduced, which is
+why understanding that loop explains every subtlety here.
+
+- **`asyncio.Lock` doesn't need OS-level mutex primitives (no compare-
+  and-swap, no memory barriers) because there's only one real thread of
+  execution — the lock is really just a plain Python boolean flag plus a
+  small wait-list of coroutines to resume when it clears.** `async with
+  lock` compiles to "if the flag is set, suspend this coroutine and add it
+  to the lock's wait-list; otherwise set the flag and proceed," and
+  releasing it resumes the next waiter. This is why locks in `uasyncio`
+  only matter across an `await` boundary, as the module says: code between
+  two `await` points runs as one uninterrupted turn of the scheduler (the
+  same non-preemptive guarantee from Level 1 module 9), so there is no
+  possible interleaving for the lock to prevent unless the critical section
+  itself yields control mid-way.
+- **`Event.set()` waking every waiter, versus a `Queue` handing one item to
+  one consumer, follows directly from what each data structure stores.** An
+  `Event` holds one boolean and a list of coroutines blocked on
+  `wait()` — setting it resolves every one of those pending futures in the
+  same scheduler pass, because there's nothing in the data structure
+  distinguishing one waiter from another. A `Queue` instead holds a bounded
+  ring buffer of actual items and a separate wait-list for *getters*
+  blocked on an empty queue and *putters* blocked on a full one — when an
+  item arrives, the scheduler wakes exactly one getter and hands it that
+  one item, because the queue's job is distributing discrete values, not
+  broadcasting a signal.
+- **`wait_for`'s cancellation is implemented by raising `CancelledError`
+  inside the target coroutine at its next suspension point, using exactly
+  the same generator `.throw()` mechanism CPython's asyncio uses** — the
+  event loop holds a live reference to the coroutine's generator object;
+  cancelling it calls `.throw(CancelledError)` on that generator instead of
+  `.send(None)`, which resumes execution at the last `await` but as an
+  exception instead of a normal return. This is precisely why cancellation
+  is cooperative and can only happen at an `await`: there is no other point
+  where the generator's frame is suspended and resumable at all — a tight
+  loop with no `await` in it (module 1's starvation case) is equally
+  immune to cancellation as it is to yielding.
+- **The lack of `TaskGroup` on most MicroPython builds is a code-size
+  decision, not a fundamental scheduling gap.** `TaskGroup`'s structured-
+  concurrency behavior (cancel every sibling when one task fails) needs
+  extra bookkeeping — tracking a task's children, propagating exceptions
+  across that tree, and coordinating group-wide cancellation — that
+  `uasyncio`'s minimal core scheduler doesn't carry, in keeping with the
+  same "smallest correct primitive" philosophy that gives `umqtt.simple`
+  no QoS 2 and `json` no streaming parser: the underlying single-generator-
+  resume loop can support the feature, but the extra bookkeeping code
+  costs flash space this port's maintainers chose not to spend by default.
+
 ## Cheat sheet
 
 | Primitive | Use for |

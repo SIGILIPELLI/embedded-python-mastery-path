@@ -195,6 +195,54 @@ increasing fragmentation risk (module 01) rather than reducing it.
 | Dual-core race | Every ring-buffer access from both cores goes through `lock` — no shared field is read or written unlocked |
 | Allocation in the hot path | `RingBuffer` and `batch` are both allocated exactly once, at setup |
 
+## How It Actually Works
+
+This design is really an exercise in matching each subsystem to the layer
+of the machine that can actually guarantee its timing — the architecture
+diagram is a map of "who owns which clock domain."
+
+- **PIO paces sampling because it's the only component in this whole
+  stack with a timing guarantee independent of the interpreter, the GC, or
+  the OS-less scheduler** — as module 05 establishes, a PIO state machine
+  is separate silicon with its own instruction memory and clock divider,
+  so `sample_clock`'s `wrap_target()`/`.side()` loop keeps generating its
+  reference pulse at a fixed rate regardless of whether Core 0's Python
+  loop is mid-GC-pause, mid-bytecode-dispatch, or momentarily starved by
+  Core 1's lock contention. Every other component in the diagram — the
+  ring buffer, the viper checksum, the uasyncio streaming layer — exists
+  specifically to keep up with a clock that PIO, not Python, is generating.
+- **The ring buffer's fixed capacity is chosen against a genuine worst-case
+  stall, not an average case, because the fixed-block heap allocator from
+  module 01 cannot grow this structure safely under load.** A `bytearray`
+  is one contiguous allocation; resizing it mid-run would require finding
+  a larger contiguous free run and copying — exactly the fragmentation-
+  prone operation module 01 warns never to do in a hot path. Sizing for
+  `worst_case_stall_ms` up front means the *only* runtime cost of a stall
+  is temporarily fuller buffer occupancy, never a reallocation attempt that
+  could itself trigger the very GC pause the design is trying to keep off
+  the sampling path.
+- **The lock's critical section is deliberately just the ring-buffer drain,
+  not the checksum computation or the UART write, because those two
+  operations have wildly different timing profiles and only one of them
+  needs cross-core exclusion.** The ring buffer is genuinely shared
+  mutable state accessed from both cores' instruction streams (module 09's
+  hazard), so it needs the hardware-backed lock; the `batch` array and the
+  UART peripheral are touched only by Core 1, so protecting them with the
+  same lock would serialize Core 0's writer against Core 1's (comparatively
+  slow) UART I/O for no correctness benefit — exactly the "smallest
+  critical section possible" principle module 09 recommends, applied
+  concretely.
+- **`gc.collect()` landing only at the post-flush boundary is possible
+  because that's the one point in Core 1's loop where no cross-core lock
+  is held and no partially-filled buffer exists** — calling it while
+  holding `lock` would mean Core 0's writer, blocked waiting for that same
+  lock, stalls for the full mark-sweep pause (module 01's single-digit-to-
+  tens-of-milliseconds figure) on top of its own sampling work, potentially
+  overflowing the ring buffer during the one operation meant to keep the
+  heap healthy — a direct collision between two modules' individual advice
+  that only resolves correctly once you reason about where the lock is and
+  isn't held.
+
 ## Cheat sheet
 
 | Component | Module it draws from |

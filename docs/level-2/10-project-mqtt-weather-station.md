@@ -203,6 +203,45 @@ slow to observe) trades battery life for responsiveness; a real
 deployment reading weather every 10-15 minutes would last dramatically
 longer on the same battery.
 
+## How It Actually Works
+
+This capstone chains six modules' hardware mechanisms into one boot cycle,
+and the ordering of `run_cycle()` is deliberately shaped by which of those
+mechanisms are cheap versus expensive, and which can fail independently.
+
+- **Every step in `run_cycle()` runs top-to-bottom on a *fresh* VM state**
+  because the whole design lives inside a deep-sleep loop (module 3): the
+  chip resets between cycles, so there's no persistent WiFi connection,
+  MQTT session, or Python object surviving from one reading to the next.
+  `connect_wifi()` and `MQTTClient(...).connect()` genuinely re-associate
+  with the AP and re-open a fresh TCP socket every single cycle — that
+  reconnect cost (seconds, not milliseconds) is exactly the "active_ma for
+  active_s" term the battery estimate is modeling, and it's the single
+  biggest lever in the whole design: fewer, longer sleep cycles amortize
+  that fixed reconnect tax over more sensing time.
+- **The outer `try/except Exception` around `run_cycle()` is positioned
+  specifically so `machine.deepsleep(CYCLE_MS)` is still reached on any
+  failure** — because deep sleep is the *only* path back to a working state
+  here (there's no long-running main loop to recover into), a bug anywhere
+  in sensor reading, display, or MQTT publishing that isn't caught would
+  otherwise leave the board hung mid-cycle, burning active-mode current
+  indefinitely instead of the microamps sleep would cost — precisely the
+  runaway-battery-drain failure mode module 3's math warns about.
+- **`retain=True` on the MQTT publish exploits the broker-side state from
+  module 1's retained-message mechanism to compensate for the device's own
+  statelessness** — since the station itself keeps no memory of its last
+  reading across a deep-sleep reset, having the *broker* hold the last
+  published value means any dashboard or subscriber that comes online
+  between this station's cycles still sees a current-ish reading rather
+  than nothing, without the device having to maintain any state of its own.
+- **`maybe_resync()`'s drift-gated NTP call is deliberately placed after
+  WiFi connects but is skipped most cycles** — because the RTC domain
+  survives deep sleep (module 3) while the rest of the chip resets, the
+  clock the device already has is usually accurate enough; paying for a
+  full NTP round-trip (a blocking UDP exchange over the network, module 6)
+  on every single wake would add measurable active-current time for no
+  benefit on cycles where the clock hasn't meaningfully drifted.
+
 ## Cheat sheet
 
 | Piece | Module it came from |

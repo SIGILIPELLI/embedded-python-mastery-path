@@ -143,6 +143,52 @@ depends on:
   particular engineer's local toolchain install, which is very hard to
   make bit-for-bit reproducible by hand.
 
+## How It Actually Works
+
+A custom board definition is a set of C preprocessor macros and linker
+inputs that reshape the firmware image at compile time — it changes what
+gets baked in, not anything the interpreter reads or interprets at runtime.
+
+- **`mpconfigboard.h`'s `#define`s are C preprocessor conditionals compiled
+  directly into the interpreter's build, not runtime configuration flags
+  Python ever inspects.** `MICROPY_PY_BLUETOOTH (0)` causes the entire
+  Bluetooth module's C source to be excluded from compilation via `#if`
+  guards throughout the codebase — the resulting firmware binary
+  genuinely contains no Bluetooth stack code at all, not a disabled one.
+  This is why it saves flash rather than just hiding a feature: code that
+  was never compiled in occupies zero bytes of the final image, unlike a
+  runtime-disabled feature that still ships its code, taking up flash
+  space, just never called.
+- **`MICROPY_GC_HEAP_SIZE` sets the literal size of the array the
+  allocator carves its fixed-size blocks (module 1, Level 3) out of** —
+  it's a compile-time constant that determines how many bytes
+  `gc_init()` reserves from the chip's available RAM at boot, which
+  directly sets the ceiling every later `gc.mem_free()` call reports
+  against. Sizing this too small for a product's actual workload
+  reproduces exactly the fragmentation and `MemoryError` failure modes
+  Level 3 covers, but with less headroom to work around them than a
+  generic development board's default (usually sized generously for
+  broad compatibility, not any specific application).
+- **Pin mappings like `pins.csv` become a lookup table the build system
+  generates into board-specific C source, mapping a symbolic name to a
+  literal GPIO number constant** — `Pin.board.LED_STATUS` resolves, after
+  the build, to exactly the same underlying `Pin(4)` register-level
+  operation covered in Level 1 module 3; the indirection exists purely at
+  build time, compiled away by the time firmware runs, which is why it
+  costs nothing at runtime while still letting a board revision change
+  which physical pin a name points to without touching application source
+  at all.
+- **The partition table (`partitions.csv`) is consumed by the second-stage
+  bootloader, which reads it from a fixed, known flash offset early in
+  boot to learn where each region — bootloader, otadata, the two OTA app
+  slots, the filesystem — actually starts and ends.** This is the same
+  table the A/B update mechanism (module 2) relies on to find the inactive
+  partition to write into; changing partition sizes on an already-deployed
+  fleet is destructive precisely because the bootloader has no way to
+  reconcile old data laid out under one partition offset scheme with a
+  new one — it isn't a software migration problem so much as a "the map
+  itself changed and the data was placed according to the old map" problem.
+
 ## Cheat sheet
 
 | Concern | Where it's controlled |

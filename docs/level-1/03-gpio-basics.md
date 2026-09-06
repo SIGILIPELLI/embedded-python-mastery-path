@@ -144,6 +144,49 @@ Wokwi's virtual button can bounce realistically: select it and set
 `"bounce": "1"` in its properties, then try the buggy counter and watch it
 miscount, exactly like real hardware.
 
+## How It Actually Works
+
+`Pin(5, Pin.OUT)` looks like it creates a "pin object," but what it actually
+does is configure a handful of bits in the ESP32's **GPIO matrix** and
+**IO_MUX** peripheral registers, and every call after that is a direct
+memory-mapped register write — there is no OS driver layer in between:
+
+- **`Pin(5, Pin.OUT)` writes to the GPIO_ENABLE register.** Each GPIO pin on
+  the chip has a dedicated bit in a 32-bit "enable" register bank that
+  decides whether the pin's output driver is connected at all. Constructing
+  the `Pin` object in MicroPython sets that bit (and configures the IO_MUX
+  to route the pin's *function* to plain GPIO rather than, say, UART or
+  I2C — modules 4 and 6 revisit that muxing). This happens once, at
+  construction time, which is why re-creating `Pin` objects in a hot loop is
+  wasted work: keep the object and just call `.value()`.
+- **`led.value(1)` is a single-instruction register write under the hood.**
+  On the ESP32, output pins 0–31 share one 32-bit "write 1 to set" register
+  (`GPIO_OUT_W1TS`) and a matching "write 1 to clear" register
+  (`GPIO_OUT_W1TC`) — writing a `1` to bit 5 of `W1TS` sets GPIO5 high
+  without disturbing any other pin's state, and the same bit in `W1TC`
+  clears it. `machine.Pin.value()` is a thin Python wrapper around exactly
+  that: one 32-bit store to a fixed physical address. The "3.3 V on the pin"
+  comment in the code above is not a metaphor — that store happens, and
+  microseconds later the transistor-level output driver on the die actually
+  changes voltage.
+- **A floating input isn't "random" by accident — it's an unbiased,
+  extremely high-impedance node picking up whatever capacitive coupling and
+  electrical noise is nearby.** The pull-up/pull-down resistors you enable
+  in software (`Pin.PULL_UP`) are physically tiny (~45 kΩ on ESP32) resistors
+  built into the pin's analog front end, connected or disconnected by
+  another register bit — `Pin.PULL_UP` doesn't change any logic in the VM,
+  it changes the analog circuit the digital reading is sampled from.
+- **Debouncing is a software workaround for a hardware fact the VM can't
+  hide.** The interpreter reads `button.value()` by loading the current
+  state of the GPIO_IN register — a snapshot of real voltage sampled by a
+  Schmitt-trigger input buffer, updated continuously by hardware regardless
+  of how often or rarely your Python loop asks. Mechanical bounce is a
+  physical property of the switch contact, not of MicroPython, which is why
+  no amount of "faster Python" fixes it — only time-based filtering
+  (`ticks_ms`/`ticks_diff`) does, because the fix has to live in the time
+  domain the bounce actually occurs in (a few milliseconds), independent of
+  how fast the interpreter itself can loop.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

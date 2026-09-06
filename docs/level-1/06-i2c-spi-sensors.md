@@ -146,6 +146,56 @@ cs.value(1)                       # deselect
 Rule of thumb at this level: prefer I2C parts when shopping — fewer wires,
 easier debugging with `scan()`.
 
+## How It Actually Works
+
+I2C, SPI, and the framebuffer model behind `oled.show()` all trade Python's
+usual "just call a method" comfort for tight control over what actually
+moves across the wire, one bit at a time.
+
+- **Hardware I2C is a peripheral state machine, `SoftI2C` is Python
+  bit-banging the pins directly.** `I2C(0, ...)` configures the ESP32's
+  dedicated I2C controller, which generates the start condition, clocks out
+  each bit on SDA synchronized to SCL, and watches for the slave's ACK bit —
+  all in silicon, at up to 400 kHz, without the CPU touching each bit.
+  `SoftI2C` instead has the *interpreter* toggle GPIO pins high and low in a
+  timed loop to fake the same protocol — it works on any two pins because
+  there's no dedicated hardware behind it, but every bit costs VM bytecode
+  dispatch time, which is why SoftI2C tops out far below 400 kHz and why the
+  cheat sheet's advice to prefer hardware I2C when available is really about
+  timing headroom, not convenience.
+- **`i2c.scan()` works by attempting the ACK handshake at all 112 possible
+  7-bit addresses.** I2C's addressing scheme reserves one bit of each
+  address byte for read/write direction; a device "answers" by pulling SDA
+  low during the 9th clock pulse (the ACK slot) if it recognizes its own
+  address on the bus. `scan()` is literally 112 tiny transactions, each
+  checking for that one ACK bit — which is also why a wiring fault (SDA and
+  SCL swapped, missing pull-ups) makes *every* address come back empty: the
+  ACK slot never gets pulled low by anything.
+- **`readfrom_mem`/`writeto_mem` encode the sensor's own register-map
+  protocol, not something I2C defines.** I2C itself only moves raw bytes
+  between a controller and a device; "register 0x6B means power management"
+  is a convention each chip's datasheet defines on top of that, and
+  `readfrom_mem(addr, reg, n)` is MicroPython's convenience wrapper for the
+  extremely common pattern of "write the register address, then read back
+  N bytes" — two I2C transactions stitched into one Python call.
+- **The framebuffer is why `show()` is a separate step.** `oled.fill()` and
+  `oled.text()` only flip bits in a `bytearray` sitting in the ESP32's own
+  RAM — a 1-bit-per-pixel bitmap, 1024 bytes for a 128×64 panel. The SSD1306
+  itself has its *own* separate display RAM on the other side of the I2C
+  bus; `show()` is the function that streams your local bytearray across
+  I2C into the display controller's memory, which is the only thing that
+  actually changes what's lit on the glass. Calling `text()` ten times
+  before one `show()` is cheap (RAM writes); calling `show()` ten times
+  would be ten slow I2C transfers of the whole framebuffer — the two-step
+  API exists specifically so you control that cost.
+- **SPI has no addressing because chip-select does that job electrically.**
+  Where I2C multiplexes many devices over shared wires using addresses sent
+  *in-band*, SPI dedicates a separate physical CS wire per device and
+  multiplexes *out-of-band* — pulling CS low is what tells a given chip
+  "the next clock pulses are for you," which is why SPI needs one more pin
+  per device but can run its shift registers much faster: there's no
+  per-bit ACK protocol to negotiate, just raw synchronous shifting.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

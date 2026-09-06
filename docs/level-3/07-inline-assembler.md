@@ -128,6 +128,56 @@ Not worth it, in nearly every real case:
   ESP32's Xtensa core or the RP2040's PIO at all, so this is the least
   portable tool in the whole optimization ladder
 
+## How It Actually Works
+
+`asm_thumb` is the point where MicroPython's compiler pipeline stops doing
+any translation at all — your source lines *are* the machine code, modulo a
+thin assembler that converts mnemonics to their 16/32-bit Thumb encodings.
+
+- **The Python-ish syntax (`add(r0, r0, 1)`) is a lexical convenience over a
+  real assembler MicroPython embeds at compile time** — it parses each line
+  as an instruction mnemonic plus operands, looks up the corresponding
+  Thumb instruction encoding (a specific bit pattern with opcode, register,
+  and immediate fields), and emits that raw encoding directly into a
+  code buffer in flash/RAM the CPU can execute in place. There is no
+  intermediate bytecode step at all, unlike viper (which still goes through
+  MicroPython's own IR before emitting native code) — `asm_thumb` functions
+  are compiled once, at decoration time, straight to the exact bytes the
+  Cortex-M's instruction fetch unit will later read.
+- **Registers `r0`-`r2` carrying arguments and `r0` carrying the return
+  value isn't a MicroPython convention — it's a direct expression of the
+  ARM Architecture Procedure Call Standard (AAPCS), the same calling
+  convention every C compiler targeting Cortex-M follows.** MicroPython's
+  runtime, when it calls into an `asm_thumb` function, loads the Python
+  arguments into `r0`-`r2` and branches to the function's entry point
+  exactly as C code would call another C function — which is precisely why
+  registers beyond `r3` are "reserved by the calling convention": the AAPCS
+  designates `r4`-`r11` as callee-saved, meaning any C (or MicroPython
+  runtime) code that was using them before the call is trusting them to
+  still hold the same values after it returns, and clobbering them without
+  saving/restoring silently corrupts whatever the caller was doing with
+  those registers — a bug with no exception, no traceback, just wrong
+  values appearing arbitrarily far downstream.
+- **"No type system, just bit patterns in registers" is a literal
+  description of what a CPU register actually is.** Every abstraction
+  layer above this one — Python's dynamic typing, viper's `int`/`ptr8`, C's
+  static types — exists specifically to give meaning to raw bits; at the
+  Thumb assembly level, a register holding `0xFFFFFFFF` is simultaneously a
+  valid unsigned 4294967295, a valid signed -1, and a valid pointer to a
+  very high memory address, and the *instruction* you apply to it (an
+  unsigned compare vs. a signed compare vs. a load) is the only thing that
+  ever disambiguates which interpretation is intended — there is no runtime
+  check anywhere in this path to catch using the wrong one.
+- **The reason this tool is ARM-Thumb-only and cannot touch the ESP32's
+  Xtensa core or the RP2040's ARM cores in a portable way is that Thumb is
+  a specific, fixed instruction encoding for one CPU architecture family** —
+  `asm_thumb` emits literal Cortex-M opcodes; running that same code buffer
+  on an Xtensa core (a completely different instruction set with different
+  opcodes, registers, and calling convention) would just execute garbage,
+  which is exactly why the RP2040's timing-critical work is steered toward
+  PIO (its own separate, architecture-independent state machine ISA)
+  instead of inline assembly at all.
+
 ## Cheat sheet
 
 | Aspect | Detail |

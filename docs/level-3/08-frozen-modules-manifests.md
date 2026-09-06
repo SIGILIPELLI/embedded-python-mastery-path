@@ -121,6 +121,58 @@ without checking the target port's documented precedence, and it is a
 frequent source of "I edited the file but nothing changed" confusion
 during development.
 
+## How It Actually Works
+
+Freezing changes *where in the firmware image* a module's bytecode lives
+and *how* the VM's import mechanism finds it — it's the same bytecode
+format as a filesystem `.mpy`, relocated into a different memory region
+with different access properties.
+
+- **Frozen bytecode is linked into the firmware's read-only flash section
+  at build time, addressable directly by the CPU's execute-in-place (XIP)
+  memory-mapped flash controller, exactly like the interpreter's own C
+  code.** Most microcontroller flash is memory-mapped — the CPU can fetch
+  instructions and data straight from flash addresses without any explicit
+  "load into RAM first" step, the same mechanism that lets the MicroPython
+  firmware itself run without being copied to RAM wholesale. Freezing a
+  module places its compiled bytecode in that same XIP-addressable region,
+  which is precisely why it costs no heap: the VM's bytecode dispatch loop
+  can fetch instructions directly from the flash address the linker placed
+  them at, the same way it fetches from RAM for a normal heap-allocated
+  code object — the memory being read from is different, but the
+  interpreter loop doesn't care.
+- **A filesystem `.py` module's bytecode, by contrast, has nowhere
+  equivalent to live except the heap** — LittleFS (module 7, Level 1)
+  stores the raw source text on the flash filesystem, but that's a
+  general-purpose filesystem region, not one wired for direct code
+  execution by the CPU's XIP path the way the firmware's own linked
+  section is. `import` on a filesystem module must read the source,
+  tokenize, parse, and compile to bytecode objects that MicroPython
+  allocates on its GC-managed heap (the same heap and allocator from
+  module 1) — those bytecode objects then sit there consuming RAM for as
+  long as the module stays imported, which is the genuine, mechanical
+  source of the RAM-savings line in the trade-off table.
+- **`manifest.py` is interpreted by the host build toolchain (a Python
+  script run on your development machine during the firmware build), not
+  by the MicroPython runtime that eventually ships** — this is why it can
+  use `freeze()`/`include()` as build-system primitives with access to the
+  full host filesystem and `mpy-cross` (MicroPython's standalone
+  cross-compiler) to turn `.py` source into `.mpy` bytecode ahead of time,
+  the exact same bytecode format and cross-compiler a filesystem-deployed
+  `.mpy` uses — freezing and cross-compiling with `mpy-cross` are the same
+  compilation step, differing only in whether the resulting bytecode gets
+  linked into the firmware image or copied onto the filesystem afterward.
+- **Import-order ambiguity between frozen and filesystem modules of the
+  same name exists because both are ultimately just entries a module
+  finder walks in some fixed search order** — MicroPython's import
+  machinery checks a short, port-defined sequence of locations (frozen
+  module table, then filesystem paths on `sys.path`, or some variation),
+  and because that sequence is baked into the firmware build rather than
+  documented as a stable cross-port guarantee, relying on a filesystem copy
+  "shadowing" a frozen one is trusting an implementation detail that can
+  differ between ports and even between MicroPython versions on the same
+  port.
+
 ## Cheat sheet
 
 | Concept | Detail |

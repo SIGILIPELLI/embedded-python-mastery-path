@@ -177,6 +177,51 @@ the application allows it.
     reconnects after the reset. Log to RTC memory or flash if you need to
     debug a stretch of missed wakeups.
 
+## How It Actually Works
+
+Deep sleep isn't the VM "pausing" — it's the chip's power-management unit
+physically shutting off entire power domains, which is exactly why nothing
+in RAM survives it except a tiny, deliberately isolated region.
+
+- **Deep sleep powers down the CPU cores, most SRAM, and most peripherals,
+  keeping only the RTC (real-time clock) domain and a small dedicated slice
+  of memory alive on a separate, minimal power rail.** That's the actual,
+  physical reason `machine.RTC().memory()` exists as a special, tiny buffer
+  rather than "just don't clear normal RAM": the ESP32's ULP/RTC domain is
+  wired to its own low-power supply specifically so it can stay energized at
+  microamp draw while the main SRAM (which needs orders of magnitude more
+  power just to hold its charge state) is fully powered off. There's no
+  software trick that could preserve ordinary heap objects through this —
+  the transistors holding those bits simply lose power.
+- **Waking from deep sleep is architecturally a boot, because it *is* one.**
+  The RTC domain's wake logic (a timer counter, or a level-change detector
+  on the EXT0/EXT1 pins) asserts a reset line to the main CPU exactly the
+  way the power-on reset circuit does — the boot ROM runs, the MicroPython
+  firmware image is reloaded and re-executed from its entry point, your
+  module-level code runs again top to bottom. `machine.wake_reason()` and
+  `reset_cause()` exist purely because the ROM bootloader can distinguish
+  *why* it's running this boot (power-on vs. deep-sleep-timer vs.
+  deep-sleep-pin) by reading a status register the RTC controller sets
+  before triggering the reset — information your Python code would
+  otherwise have no way to recover.
+- **"Peripherals lose power state" follows from the same power-domain
+  boundary.** GPIO pin drive strength and output-hold logic mostly live
+  outside the always-on RTC domain, so a pin you drove HIGH before sleeping
+  reverts to its default (often floating or pulled per the IO_MUX reset
+  value) the instant its power domain drops — there's no register anywhere
+  remembering "this pin was high" across the power gap unless you
+  specifically used `esp32`'s hold-pin APIs, which route that one pin's
+  state through the RTC domain instead of the main one.
+- **The battery-life math bears out a hardware reality: switching power
+  domains on and off has its own energy cost (charging up regulators,
+  re-associating WiFi, re-initializing sensors), so very short sleep
+  intervals can spend more energy on wake-up transients than they save in
+  sleep current** — a genuinely low duty cycle needs long uninterrupted
+  sleep stretches specifically because every wake pays that fixed
+  re-initialization tax before any useful "awake" work even starts, which is
+  why the exercise's comparison across 15 s / 60 s / 10-minute intervals is
+  really measuring how thoroughly that fixed cost gets amortized.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

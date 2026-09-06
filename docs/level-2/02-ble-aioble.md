@@ -131,6 +131,53 @@ asyncio.run(main())
     the service/characteristic layout can't change afterward without a
     restart. Decide your data model before writing the advertise loop.
 
+## How It Actually Works
+
+`aioble` sits on two layers you never see directly: the `bluetooth` module's
+thin binding to the chip's Bluetooth controller firmware, and `uasyncio`'s
+event loop translating BLE stack events into `await`-able Python objects.
+
+- **The actual radio protocol work happens in a separate Bluetooth
+  controller, not in your Python code.** The ESP32 (and most MicroPython
+  BLE ports) run a full Bluetooth Low Energy link-layer and host stack as
+  firmware, communicating with the main application core over an internal
+  HCI (Host Controller Interface) transport. `bluetooth.UUID`,
+  `aioble.Service`, and friends are Python objects that get serialized into
+  HCI commands — "start advertising," "register this GATT table" — sent
+  across that internal interface. This is why GATT tables must be built
+  once before advertising starts: the controller firmware allocates its own
+  internal attribute-table memory when told about your services, and most
+  BLE controller firmware doesn't support redefining that table on the fly.
+- **`await aioble.advertise(...)` blocks the *task*, not the interpreter,
+  because advertising and connection events arrive as IRQ-driven callbacks
+  from the Bluetooth stack that get bridged into `uasyncio`'s scheduler.**
+  Internally, the `bluetooth` module registers a C-level IRQ handler with
+  the BLE stack; when a central completes a connection, that handler posts
+  an event that resolves the awaiting coroutine's future, waking the task
+  on the event loop's next pass — the same "interrupt sets a flag, the loop
+  picks it up" pattern from Level 1's ISR rules, just wired specifically for
+  BLE connection events instead of GPIO edges.
+- **`write()` and `notify()` are two genuinely different operations at the
+  ATT protocol level, which is why you need both.** `write()` only updates
+  the characteristic's value in the controller's local attribute table — a
+  future GATT Read Request from any central will see the new value, but
+  nothing is pushed anywhere. `notify()` triggers the controller to actively
+  send an ATT Handle Value Notification packet over the air to a specific
+  already-connected central. A client that reads on connect needs the
+  former; a client that's already subscribed and listening needs the
+  latter — they are not two ways of doing the same thing, they're the pull
+  and push halves of the GATT model.
+- **"Advertising stops while connected" is a link-layer state, not an
+  aioble limitation.** A classic single-role BLE peripheral's radio can only
+  be in one of a small set of link-layer states at a time (advertising,
+  initiating, connected, scanning); actually supporting multiple
+  simultaneous central connections while still being discoverable requires
+  the controller firmware to implement multi-link scheduling, time-slicing
+  the radio between roles — a controller capability aioble can only expose
+  if the underlying chip's Bluetooth firmware actually supports it, which
+  is why the module tells you to plan around one connection unless you've
+  specifically verified otherwise.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

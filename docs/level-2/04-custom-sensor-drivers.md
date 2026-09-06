@@ -154,6 +154,54 @@ mip.install("github:yourname/my_accel_driver/accel.py")
     before the first read is valid. Do it once in `__init__`, not on every
     `read_*()` call — the latter silently triples your loop's cycle time.
 
+## How It Actually Works
+
+Writing a driver from a datasheet forces you to confront what "reading a
+sensor" actually is underneath the Python: a specific sequence of raw bytes
+crossing a wire, with meaning that exists only in the datasheet's convention
+— nothing about the bytes themselves says what they mean.
+
+- **`struct.unpack` is reversing a serialization format the *sensor's own
+  firmware* chose, and MicroPython's `struct` module implements that
+  reversal in C for speed, not in Python.** A sensor's ADC produces a raw
+  integer reading; its onboard controller decides how to lay that integer
+  out as bytes (endianness, signed vs. unsigned, bit width) before shipping
+  it over I2C — decisions baked into the sensor's firmware, unrelated to
+  MicroPython or your driver. `struct.unpack("<hhh", data)` doesn't "know"
+  anything about the sensor; it's a generic byte-reinterpretation operation,
+  and getting the format string wrong (endianness, signedness) produces a
+  *different but still valid-looking* integer, which is exactly why
+  endianness bugs masquerade as calibration bugs — there's no error, just a
+  wrong number that isn't obviously wrong.
+- **`i2c.writeto_mem`/`readfrom_mem` are two back-to-back I2C transactions
+  under one Python call, and the sensor's internal register file is a piece
+  of hardware state entirely separate from anything in the ESP32.** Writing
+  `0x07` to a "power control" register doesn't change any Python state — it
+  changes a latch or flip-flop bank physically inside the sensor's own
+  silicon that its internal state machine reads to decide whether to power
+  its ADC and sampling circuitry. That's why a botched or skipped
+  `_init_device()` doesn't raise an error: the I2C transaction can succeed
+  perfectly (the sensor ACKs the write) while the sensor's *internal* logic
+  simply never turns on its measurement circuit — the bus doesn't know or
+  care what a register means, only the sensor's firmware does, which is why
+  `read_raw()` afterward returns "valid-looking" garbage rather than an
+  exception.
+- **The settling-delay warning reflects real analog physics, not a software
+  quirk.** Many sensors need tens of milliseconds after power-up for
+  internal reference voltages, oscillators, or MEMS elements to
+  stabilize — a genuine physical settling time no amount of fast I2C
+  clocking can shorten. Doing that wait once in `__init__` rather than per
+  `read_*()` call is possible specifically because it's a one-time hardware
+  warm-up, not a per-sample requirement — conflating the two costs real
+  milliseconds on every reading for no benefit.
+- **Passing `i2c` into `__init__` instead of constructing it internally is
+  what separates the driver's software abstraction from the board's
+  physical wiring** — `I2C(0, scl=Pin(22), sda=Pin(21))` claims specific
+  GPIO pins and one of the ESP32's fixed hardware I2C controller instances;
+  hardcoding that inside a driver silently assumes every board that uses it
+  wired those exact pins to that exact bus, which is rarely true across
+  projects even on the same chip family.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

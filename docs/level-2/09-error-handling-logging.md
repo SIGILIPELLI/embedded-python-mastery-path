@@ -217,6 +217,51 @@ confident every code path (including error-handling branches) reaches a
     crash during startup keeps you from ever seeing why the *previous*
     boot failed.
 
+## How It Actually Works
+
+The tools in this module exist because MicroPython's exception machinery and
+its watchdog are both genuinely minimal, C-level facilities — not the rich
+introspection layer desktop Python's `traceback` module provides.
+
+- **`sys.print_exception` exists because MicroPython's exception objects
+  carry a much thinner traceback than CPython's.** CPython builds a linked
+  list of frame objects with full local-variable scopes as an exception
+  propagates; MicroPython, to save RAM, stores a compact list of
+  (bytecode-offset, line-number, function-name) tuples instead — enough to
+  reconstruct a readable traceback text, but not a live, inspectable frame
+  chain. `sys.print_exception(e, buf)` walks that compact representation
+  and formats it into text, which is also why capturing it into an
+  `io.StringIO` works: you're getting a formatted string, not a picklable
+  object graph the way `traceback.format_exception` on the desktop can
+  sometimes imply.
+- **The watchdog timer (`machine.WDT`) is a small hardware counter
+  completely independent of the VM — this is precisely what lets it catch
+  hangs no amount of `try/except` can.** It's implemented as a dedicated
+  countdown timer peripheral wired directly to the chip's reset line;
+  `wdt.feed()` just writes a reload value into that peripheral's register.
+  If the register isn't rewritten before the countdown reaches zero, the
+  peripheral itself asserts a hardware reset — a mechanism operating
+  entirely outside the Python interpreter, which is why it can recover from
+  a genuinely stuck blocking C call (a hung I2C transaction with no
+  timeout) that no Python-level exception handler could ever see, since the
+  VM itself is the thing frozen.
+- **`machine.reset_cause()` reads a small set of status bits the boot ROM
+  preserves specifically to answer "why did I just start running."**
+  Different reset sources (power-on brown-out detection, the watchdog
+  peripheral firing, an explicit `machine.reset()`, deep-sleep wake) each
+  set a distinct value in a status register the ROM bootloader reads before
+  handing off to the MicroPython firmware — this is genuinely the same
+  mechanism deep sleep's `wake_reason()` (module 3) uses, generalized to
+  cover every reset path, not just sleep/wake.
+- **Log rotation on flash matters here for the same LittleFS reasons as
+  Level 1 module 7 — repeated small appends fragment write cycles across
+  flash sectors, and an ever-growing single file eventually can't find a
+  contiguous run of blocks to extend into.** A crash-log writer is a
+  particularly aggressive log producer (every unhandled exception writes a
+  full traceback, potentially many lines) which is exactly why pairing
+  crash logging with a hard size cap and rotation is treated as
+  non-optional here rather than a nice-to-have.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

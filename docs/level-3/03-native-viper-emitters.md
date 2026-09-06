@@ -144,6 +144,53 @@ decorators (they're MicroPython-specific compiler features), so there
 is nothing meaningful to run here to reproduce the ratios; the
 comparison only exists on-device.
 
+## How It Actually Works
+
+The three emitters (bytecode, native, viper) are three different *code
+generators* sharing one compiler front-end — the difference between them is
+entirely about what the compiler's back-end targets and what type
+information it's given to work with.
+
+- **The bytecode emitter compiles to a stack-based virtual instruction
+  set** — each source-level operation like `total += i * i` becomes several
+  opcodes (`LOAD_FAST`, `LOAD_FAST`, `BINARY_OP MULTIPLY`, `LOAD_FAST`,
+  `BINARY_OP ADD`, `STORE_FAST`) that the VM's dispatch loop decodes and
+  executes one at a time, each requiring a jump through a dispatch table
+  (or a giant switch statement) plus boxed-object arithmetic that checks
+  operand types at runtime — every `+` genuinely asks "what kind of thing
+  is this?" before deciding how to add it. That per-opcode dispatch and
+  per-operation type check is the interpretation overhead this whole module
+  exists to escape.
+- **`@micropython.native` compiles the *same* bytecode-level operations
+  directly to the target's native instruction set (ARM Thumb, Xtensa,
+  RISC-V depending on the port) at import time, but keeps every object
+  boxed and every operation's semantics identical.** A native-compiled
+  `total += i * i` still calls the same boxed-integer-arithmetic runtime
+  functions bytecode would have called — it just reaches those calls
+  through direct machine-code branches instead of a dispatch-loop-and-opcode
+  fetch, which is why the speedup is real but modest (~2x): you've removed
+  the dispatch overhead, not the boxing/dynamic-typing overhead underneath.
+- **`@micropython.viper` is a genuinely different compiler mode that emits
+  code operating on raw machine words instead of boxed `mp_obj_t` values.**
+  A viper `int` is compiled to occupy an actual CPU register or raw memory
+  slot holding a native 32-bit value — no boxing, no dynamic type check, no
+  runtime dispatch to a generic "add" function; `total += i * i` becomes
+  literal ADD/MUL machine instructions on registers, exactly like C would
+  generate. This is precisely why it's 10x+ and precisely why it silently
+  wraps on overflow: a genuine machine-word `int` has no bignum-promotion
+  path at all, because Python's arbitrary-precision integer semantics
+  simply were not compiled in for that variable.
+- **`ptr8`/`ptr16`/`ptr32` compile to a bare pointer dereference with no
+  runtime bounds check inserted, because inserting one is exactly the
+  Python-level safety machinery viper exists to strip away.** A regular
+  `bytearray[i]` goes through `mp_obj_t` dispatch to a subscript handler
+  that explicitly compares `i` against the buffer's stored length before
+  reading — that comparison is Python-level object-model code viper's
+  typed pointers never generate, which is also why `ptr32` indexing is
+  word-granular: the compiler emits `base_address + i * 4`, the same raw
+  address arithmetic a C compiler would produce for `int32_t *p; p[i]`,
+  with no notion of "byte offset" surviving into the generated code at all.
+
 ## Cheat sheet
 
 | Emitter | Typical speedup | Type system | Bounds-checked | Risk |

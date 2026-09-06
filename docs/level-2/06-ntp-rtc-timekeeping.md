@@ -183,6 +183,50 @@ short wake cycle while still catching drift before it becomes meaningful.
     retry loop) into any deep-sleep wake cycle that includes a resync, or
     it silently eats your battery savings.
 
+## How It Actually Works
+
+The clock on a microcontroller is a genuinely different piece of hardware
+from what "time" means on a desktop, and NTP's job is bridging a
+free-running oscillator to real-world time over an unreliable network.
+
+- **`machine.RTC()` is backed by a dedicated low-power oscillator circuit in
+  the RTC power domain — the same domain that survives deep sleep (module
+  3) — counting seconds independent of the main CPU clock.** On cold boot,
+  that counter simply starts from whatever its reset default is (often
+  epoch-like values), because there's no battery-backed reference and no
+  OS clock daemon to seed it; `rtc.datetime()` reads/writes the counter's
+  raw register fields directly, which is also why the field order
+  `(year, month, day, weekday, ...)` follows the chip vendor's register
+  layout rather than any Python convention — it's a direct mirror of
+  hardware bit-fields, not a designed API.
+- **`ntptime.settime()` is a genuine, if minimal, implementation of the NTP
+  wire protocol** — it builds a 48-byte NTP request packet, sends it via UDP
+  to the configured server, waits for a reply, extracts the 64-bit NTP
+  timestamp field from a specific byte offset in the response, converts NTP
+  epoch (1900) to Unix epoch (1970) with a hardcoded constant, and calls
+  `machine.RTC().datetime(...)` to load the result into the RTC's hardware
+  registers. It genuinely blocks on a UDP round-trip over a real network
+  path, which is precisely why it can hang for seconds under a flaky WiFi
+  connection: it isn't polling a fast local peripheral, it's waiting on
+  packets crossing the actual internet.
+- **There's no timezone database because a timezone database is tens to
+  hundreds of kilobytes of transition-rule data (`tzdata`), and MicroPython
+  budgets its entire flash image far below what desktop Python's `zoneinfo`
+  assumes is available.** UTC arithmetic (add/subtract a fixed offset) is
+  the only timezone handling that fits the footprint; anything smarter (DST
+  transition dates that shift ever few years by international agreement)
+  would need shipping and periodically updating real calendar data no
+  embedded flash budget in this course's scope can spare.
+- **`time.time()` on MicroPython counts seconds from the port's own epoch
+  (2000-01-01 on most ports, not 1970 like CPython), converted transparently
+  by `time.localtime()`/`time.time()` so your Python code never sees the
+  raw offset — but this is exactly why timestamps computed on-device and
+  compared against a server's Unix-epoch timestamps need care about which
+  epoch each number is actually counted from.** The RTC hardware itself
+  doesn't know or care about any epoch at all; it's MicroPython's `time`
+  module doing the epoch-relative arithmetic in software on top of the raw
+  hardware seconds counter.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

@@ -164,6 +164,59 @@ then C modules or PIO for the parts that genuinely need
 deterministic, cycle-level timing that no amount of Python
 restructuring will reach.
 
+## How It Actually Works
+
+Every performance rule of thumb in this module traces back to how
+MicroPython's bytecode dispatch loop resolves names and how its timer
+peripheral surfaces its counter to Python.
+
+- **`ticks_us()` wraps at `2**30`, not `2**32`, because two bits are
+  deliberately reserved so `ticks_diff`'s subtraction can detect
+  wraparound unambiguously.** The underlying hardware timer/counter
+  peripheral genuinely runs a much wider (often 64-bit) free-running
+  counter; MicroPython masks it down to a fixed range specifically so
+  `ticks_diff(new, old)` can compute `((new - old + 2**29) % 2**30) - 2**29`
+  — a formula that gives the *correct* signed difference even across a
+  wrap, as long as the true elapsed time never exceeds half the range.
+  Plain subtraction breaks because unmasked arithmetic on wrapped values
+  has no way to distinguish "time went backward" from "time wrapped
+  forward" — the masking and the special diff function are a matched pair,
+  not independent design choices.
+- **Attribute lookup costs a real hash-table probe because `self.adc` and
+  `module.func` are dictionary lookups at the bytecode level (`LOAD_ATTR`
+  / `LOAD_GLOBAL` opcodes), not compile-time-resolved offsets.** Every
+  Python object with attributes carries (or points to) a dict-like
+  structure MicroPython calls a "map" internally; each `self.x` access
+  walks that structure at runtime because Python's attribute model allows
+  attributes to be added, removed, or shadowed by a subclass or instance
+  at any time — genuine dynamic-language flexibility that has a genuine
+  per-access cost. Binding `read = self.adc.read_u16` once turns N runtime
+  lookups into 1, because the resulting bound-method object is then just
+  invoked directly by reference, skipping the attribute-chain walk on
+  every subsequent call.
+- **Locals beat globals beat attributes because MicroPython's function
+  frames allocate local variables as a fixed-size array indexed by
+  bytecode-time slot number (`LOAD_FAST`/`STORE_FAST` opcodes) — computed
+  once at compile time, since a function's local variable names are fully
+  known before it ever runs.** Globals and attributes have no such
+  static slot: they're resolved by name through a dict at every access
+  because the set of module-level names or instance attributes isn't
+  fixed until runtime. The three-tier speed hierarchy in this module is
+  really "how much of the lookup got resolved at compile time" — locals
+  fully static, globals looked up by name in one dict, attributes looked
+  up by name potentially through more than one map (instance, then class,
+  then base classes).
+- **`array.array` genuinely stores raw C values contiguously instead of
+  boxed Python objects, which is why it saves both memory and per-element
+  overhead.** A `list` of ints holds pointers to individually heap-allocated
+  int objects (or small-int-encoded pointers, per module 1) — accessing
+  element `i` means dereferencing a pointer, then possibly unboxing.
+  `array.array('H', ...)` allocates one block sized `2 * len` bytes and
+  reads/writes native machine values directly via `struct`-style
+  interpretation, with no per-element Python object at all — fewer heap
+  allocations (helping the GC pause problem from module 1) and better
+  memory locality on any port with an instruction/data cache.
+
 ## Cheat sheet
 
 | Technique | Saves |

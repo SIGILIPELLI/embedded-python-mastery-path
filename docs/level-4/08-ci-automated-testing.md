@@ -170,6 +170,49 @@ Putting it together, a realistic pipeline for a firmware release:
    a small percentage, gated on the above having passed — never build
    and roll out from a commit that skipped its own test gates.
 
+## How It Actually Works
+
+The Unix port's usefulness (and its sharp limits) both come from it being
+a genuinely different *build target* of the exact same MicroPython source
+tree — same language core, deliberately different peripheral layer.
+
+- **`ports/unix` compiles the identical `py/` core (the lexer, compiler,
+  bytecode VM, GC, and object model covered throughout Level 3) against
+  POSIX system calls instead of a microcontroller's register set** — the
+  same `mp_obj_t` machinery, the same mark-sweep collector, the same
+  bytecode dispatch loop this course has traced through embedded ports run
+  verbatim on the Unix build, which is exactly why pure logic (parsing, a
+  state machine, `_decode_raw`'s bit manipulation) behaves identically in
+  both places: none of that code path differs between ports at all. What
+  differs is the *hardware abstraction layer* — `ports/unix` simply never
+  compiles in `machine`, `network`'s WLAN backend, or any peripheral
+  driver, because there is no GPIO register or WiFi radio on a Linux
+  machine to back them with, the same compile-time module-exclusion
+  mechanism module 5's `mpconfigboard.h` uses deliberately, here happening
+  by simple absence of any hardware to bind to.
+- **`import machine` failing immediately at module scope on the Unix port
+  is the identical mechanism Level 4 module 1 leverages for testability —
+  Python's `import` statement raises `ModuleNotFoundError` the instant the
+  module system can't locate a module with that name, before any of the
+  importing file's other code executes.** This single fact is why the
+  driver-isolation architecture pattern and the CI testing strategy are
+  really the same idea viewed from two angles: code structured so hardware
+  imports live only in thin driver modules is, automatically and for free,
+  code that can be exercised by the Unix port's identical interpreter core
+  without ever touching real silicon.
+- **`mpremote run` driving hardware-in-the-loop tests uses the same raw-
+  REPL file-transfer-and-execute mechanism from Level 2 module 5** — the
+  CI runner's host process pushes the test file's source into the board's
+  raw REPL, the board's actual embedded-port interpreter (not the Unix
+  port) compiles and runs it against real registers and real peripherals,
+  and results stream back over the same serial link. This is the
+  structural reason these tests are slower and harder to scale: each one
+  requires exclusive access to a physical board's serial port (the same
+  contention Level 2 module 5 describes) and genuine wall-clock time for
+  real hardware operations (a real I2C transaction, a real deep-sleep
+  cycle) that no amount of faster CI compute can shorten, unlike Unix-port
+  tests which run at native-process speed with no hardware latency at all.
+
 ## Cheat sheet
 
 | Test type | Runs where | Covers |

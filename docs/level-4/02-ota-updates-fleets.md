@@ -157,6 +157,58 @@ a working one used to be — `os.rename` on a single filesystem is
 effectively atomic, while streaming new bytes directly on top of the
 existing file is not.
 
+## How It Actually Works
+
+Both update paths lean on a mechanism this course keeps returning to:
+never mutate the thing currently in use — write the new version somewhere
+else, verify it, then flip a single pointer.
+
+- **The ESP32's A/B partition scheme is enforced by the boot ROM itself,
+  not by MicroPython.** The chip's first-stage bootloader (burned into
+  read-only mask ROM, running before any of your firmware) reads a small
+  "otadata" partition containing a sequence number and validity flags for
+  each OTA slot, and jumps to whichever partition that data currently
+  designates active. Espressif's OTA API writes the new image into the
+  inactive partition's flash region — physically separate flash sectors
+  from the ones the running firmware occupies — and only as its final
+  step updates the otadata partition's sequence number. Because the
+  currently-executing code is being read from flash sectors the update
+  never touches, a power loss at any point during the download leaves
+  those sectors — and the otadata pointer — exactly as they were: the ROM
+  bootloader boots the same partition it always did.
+- **Version-tuple comparison working correctly for free is Python's
+  built-in lexicographic tuple ordering, applied to something where that
+  happens to be exactly the right semantics** — `(2, 10, 0) > (2, 9, 9)`
+  compares the first elements (`2 == 2`), then the second (`10 > 9`), and
+  stops, exactly the way semantic versioning defines "newer." String
+  comparison instead compares byte values character-by-character, so
+  `"2.10.0"` loses to `"2.9.9"` because the character `'1'` (0x31) sorts
+  before `'9'` (0x39) at the very first differing position — the bug isn't
+  in version numbering at all, it's a byte-ordering artifact of using the
+  wrong data type for the comparison.
+- **`os.rename` being atomic on a single filesystem is a real LittleFS (and
+  most filesystem) guarantee rooted in how directory-entry updates work at
+  the block level** — renaming a file only needs to update the directory
+  metadata block that maps a name to a data location, a single, small,
+  journaled write LittleFS can complete or not complete as one unit
+  (recall module 7, Level 1's copy-on-write log structure). Writing new
+  bytes directly on top of an existing file, by contrast, touches
+  potentially many data blocks over an extended period — a power loss
+  partway through leaves some blocks new and some old, an inconsistent mix
+  no rename-based scheme ever exposes because the old file's blocks are
+  never touched until the rename swaps which directory entry points where.
+- **The rollout hash bucketing works because SHA-256 output is
+  (for practical purposes) uniformly distributed across its output space**
+  — taking the first byte of a cryptographic hash and reducing it modulo
+  100 spreads device IDs evenly across buckets 0-99 regardless of how
+  device IDs are actually named (sequential, random, whatever), because a
+  cryptographic hash function is specifically designed so that small,
+  patterned changes in input (like an incrementing device counter) produce
+  effectively unpredictable, uncorrelated output bits — the same property
+  that makes hash functions useful for integrity verification is what
+  makes them useful for stable, pseudo-random-but-deterministic fleet
+  bucketing here.
+
 ## Cheat sheet
 
 | Concept | Detail |

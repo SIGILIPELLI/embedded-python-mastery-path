@@ -277,6 +277,48 @@ Verify each claim before calling it done:
    confirm faster sampling; corrupt the JSON, reset, confirm it boots on
    defaults.
 
+## How It Actually Works
+
+This capstone is a good place to see how the individually-explained
+mechanisms of modules 1–9 actually compose under real concurrent load on a
+single core with a fixed heap.
+
+- **All four tasks (heartbeat, sampler, display, and every web client
+  handler) share one event loop and one heap, so a memory or timing mistake
+  in any one of them is visible everywhere.** `SensorLog`'s ring buffer is
+  pre-allocated for exactly this reason: if `sensors.py` instead appended to
+  a growing list on every reading, the allocator would eventually have to
+  find space during a `poll_sensor`-style task's turn, potentially
+  triggering a GC pass (module 3 territory) that pauses *every* task,
+  including the heartbeat LED — so "n=0 e=0 with a steady 1 Hz blink" in
+  the test plan is really a proxy for "no task is doing unbounded
+  allocation."
+- **`asyncio.start_server` hands each incoming connection its own task, so
+  the web server's blocking-looking `await reader.readline()` doesn't block
+  the sampler.** Each `handle()` invocation is a fresh coroutine the loop
+  schedules independently; when it awaits a socket read, the loop parks
+  that one task on the socket's readiness and moves on to whatever else is
+  ready — the sampler's `await asyncio.sleep(cfg["read_interval_s"])` and
+  the display's redraw keep firing on schedule regardless of how many
+  browsers are hitting `/api/data`. This is the mechanical reason this
+  design succeeds where module 8's single-`accept()`-loop server couldn't.
+- **The bounded WiFi-connect loop (`for _ in range(100): ... time.sleep_ms(200)`)
+  is deliberately *not* async** — it runs before `asyncio.run(main())`
+  starts the event loop, so there's no loop yet to yield to; blocking here
+  is the only option, which is exactly why it's bounded (100 × 200 ms = 20 s
+  max) rather than an unbounded `while not wlan.isconnected()`. An offline
+  device that still samples and displays is a direct consequence of not
+  letting that pre-loop wait become infinite.
+- **Every `except OSError: pass` in `sensors.py` and `webapp.py` is
+  absorbing a different physical failure with the same Python exception
+  type** — a flash write hitting `ENOSPC`, a DHT22 timing out on its
+  one-wire protocol, a TCP client resetting its connection mid-response —
+  because MicroPython's C layer maps nearly all low-level hardware and
+  networking failures onto `OSError` with an errno, rather than a rich
+  exception hierarchy. Catching the general case is the practical, if
+  coarse, way an embedded program stays alive through the failure modes its
+  desktop counterpart rarely has to consider at all.
+
 ## Cheat sheet — the patterns this project locked in
 
 | Pattern | Where |

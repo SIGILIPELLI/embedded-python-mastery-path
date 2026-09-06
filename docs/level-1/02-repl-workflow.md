@@ -130,6 +130,47 @@ board's filesystem automatically.
     fast you can't break in), re-flash the firmware or use
     `mpremote fs rm :main.py` the instant after a reset.
 
+## How It Actually Works
+
+The REPL feels instant because there is no build step standing between it and
+the chip — but there's real machinery underneath the friendly `>>>` prompt:
+
+- **The REPL is just another script running in the VM.** After boot, the
+  firmware calls into a small C function that reads a line, feeds it to the
+  same compiler `import` uses, compiles it to bytecode on the fly, and runs
+  it on the same interpreter loop as `main.py`. There's no separate
+  "interactive mode" binary — `led.value(1)` you typed by hand and
+  `led.value(1)` sitting in a file take an identical path through the VM.
+  That's why the REPL can `import` your own modules and call functions
+  defined in `main.py` if you `Ctrl-C` into it: the module objects are still
+  live on the heap.
+- **`Ctrl-C` works because MicroPython polls for it between bytecode
+  instructions.** The USB/UART driver sets a flag on interrupt when it sees
+  byte `0x03`; the VM's bytecode dispatch loop checks that flag periodically
+  and raises `KeyboardInterrupt` at the next safe point — it is *not* an
+  OS-level signal (there's no OS to deliver one). This is also why a tight
+  loop with no I/O and no `time.sleep()` can occasionally feel slow to
+  interrupt: the check only happens between opcodes, and a single line like
+  a giant list comprehension can run many opcodes before yielding.
+- **A soft reset (`Ctrl-D`) reruns boot without power-cycling the chip.** It
+  discards the current heap, re-initializes the VM's global state, then
+  re-executes `boot.py` and `main.py` from the filesystem — but it does
+  *not* reset peripherals the hardware itself remembers (a GPIO left driven
+  high by `machine.Pin` can stay high across a soft reset since the pin
+  controller's register state isn't touched). A hard reset via `EN`/`RST` or
+  `machine.reset()` does a full chip reset, which does clear peripheral
+  state — a distinction that matters when you're debugging "why is the LED
+  still on after Ctrl-D."
+- **`mpremote` talks two different protocols to the same UART.** The
+  friendly REPL you type into interactively is a plain terminal echo loop.
+  `mpremote fs cp` and `run` instead drop the board into "raw REPL" mode
+  (`Ctrl-A`) — a machine-oriented protocol with explicit start/end markers
+  and no echo, so the host tool can send exact bytes (including a whole
+  file's contents) and reliably tell when execution finished. That's the
+  actual meaning of the `Ctrl-A`/`Ctrl-B` row in the cheat sheet below:
+  raw REPL is what automation needs, friendly REPL is what humans need, and
+  they're the same interpreter behind two different framing protocols.
+
 ## Cheat sheet
 
 | Command / key | Purpose |

@@ -155,6 +155,49 @@ log_reading()
 The capstone upgrades this idea to a fixed-size in-RAM ring buffer flushed
 to flash — but rotation is the workhorse you'll reuse everywhere.
 
+## How It Actually Works
+
+`open()` looks identical to desktop Python, but underneath it MicroPython is
+talking to LittleFS, a filesystem specifically engineered for raw NOR flash
+and its two defining constraints: erase-before-write, and a limited number
+of erases per cell.
+
+- **Flash can't be overwritten in place the way a hard drive can.** A NOR
+  flash sector must be *erased* (every bit set to 1) as a whole block —
+  typically 4 KB — before any bit in it can be written back to 0. LittleFS
+  is a copy-on-write, log-structured filesystem: instead of editing a file's
+  data block directly, it writes the new version into a fresh location and
+  updates metadata to point at it, only reclaiming (erasing) the old block
+  later. This is fundamentally different from ext4 or NTFS, and it's the
+  real reason `os.stat()`/`os.statvfs()` exist as thin wrappers around
+  LittleFS's own accounting rather than a generic VFS layer pretending flash
+  behaves like a disk.
+- **Wear-leveling is why "write every 50 ms will destroy a board" is
+  literal, not hyperbole.** Each flash sector tolerates on the order of
+  10,000–100,000 erase cycles before it stops reliably holding a charge.
+  LittleFS spreads writes across free blocks rather than always erasing the
+  same physical sector (that's "wear leveling"), which delays the failure
+  but cannot eliminate it if you write constantly — the finite number of
+  erase cycles is a property of the silicon's floating-gate transistors, not
+  something any filesystem algorithm can work around.
+- **`json.load`/`json.dump` allocate a full parse tree on the heap.** Unlike
+  streaming parsers, MicroPython's `json` module builds the complete
+  dict/list structure in RAM before your code sees any of it — fine for a
+  small `config.json`, but a reason to never treat it as a database: parsing
+  a multi-KB JSON file on a device with ~100 KB of heap competes directly
+  with everything else your program has allocated, and is a common,
+  hard-to-diagnose source of `MemoryError` on boot when a log file
+  accidentally gets loaded as if it were config.
+- **The rotate-to-`.old` pattern is a manual, file-level version of what
+  LittleFS's own journal does internally at the block level** — never let
+  an in-progress write be the *only* copy of anything you can't afford to
+  lose. Because a power loss mid-write can leave a file truncated or (rarely,
+  depending on wear and corruption) a directory entry inconsistent, LittleFS
+  is designed to always recover to *some* consistent prior state after an
+  unclean power-down — but "consistent" doesn't mean "your log wasn't
+  truncated," which is exactly the gap the two-file rotation scheme closes
+  at the application level.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

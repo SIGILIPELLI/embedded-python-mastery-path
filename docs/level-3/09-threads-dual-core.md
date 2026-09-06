@@ -158,6 +158,64 @@ Even in the CPU-bound case, check whether `@micropython.native` or
 second core doesn't remove the correctness burden threads add, so it
 should be a deliberate trade, not a default.
 
+## How It Actually Works
+
+MicroPython's thread support genuinely hands Python code to a second
+physical core's instruction pipeline — this is the one place in the whole
+course where "the interpreter" stops being singular, and the GIL only
+partially compensates for that.
+
+- **The GIL is a single mutex the VM's bytecode dispatch loop acquires
+  before executing each opcode (or a small batch of opcodes) and releases
+  periodically, ensuring only one core is ever mutating the interpreter's
+  own core data structures — the GC's mark bits, an object's internal
+  fields — at a given instant.** It exists to protect the *interpreter*
+  from corrupting itself, not to make your program's higher-level
+  operations atomic. Because the lock is released and reacquired between
+  individual bytecode instructions (not between Python statements), a
+  single source line like `counter += 1` compiles to `LOAD_GLOBAL`,
+  `LOAD_CONST`, `BINARY_OP`, `STORE_GLOBAL` — four separate opportunities
+  for the scheduler to switch to the other core mid-sequence — which is
+  the literal bytecode-level explanation for why the read-modify-write
+  race in this module is reproducible.
+- **On the RP2040, "the second core" is not a simulated or time-sliced
+  abstraction — MicroPython's port literally boots a second copy of its
+  interpreter loop running on physical core 1, with its own stack and
+  program counter, executing instructions from the same flash concurrently
+  with core 0.** `_thread.start_new_thread` performs the RP2040 SDK's
+  `multicore_launch_core1()` call under the hood, handing that second
+  core an entry point into the MicroPython runtime configured to run your
+  Python function. This is qualitatively different from `uasyncio`'s
+  single-generator-resume loop (module 6): there, only one call stack ever
+  executes, and switches happen only at `await`; here, two independent
+  instruction streams genuinely execute in parallel, and either can be
+  paused mid-instruction by the memory bus arbiter, a cache-line fill, or
+  any number of hardware-level timing effects neither Python program
+  controls or can even observe.
+- **`_thread.allocate_lock()` maps to a real hardware-arbitrated primitive
+  on multi-core ports — typically the RP2040's SIO spinlocks, a small bank
+  of hardware registers specifically designed so two cores can attempt an
+  atomic test-and-set without racing each other at the silicon level.**
+  Software running on a single core can rely on the GIL to serialize
+  bytecode; two genuinely parallel cores contending for the same shared
+  bytearray or peripheral need an actual atomic hardware operation as the
+  foundation, because there is no interpreter-level lock spanning two
+  separate cores' fetch-decode-execute pipelines — this is why the lock
+  here is a fundamentally different kind of primitive than `asyncio.Lock`
+  in module 6, even though both are used with the same `with lock:` syntax.
+- **The I2C/SPI bus race is dangerous specifically because the peripheral's
+  internal state machine has no notion of "this transaction belongs to
+  thread A" — from the bus controller's perspective, writes and reads from
+  either core are indistinguishable interleaved register accesses to the
+  same hardware.** An I2C write is itself multiple bus-level phases
+  (address byte, ACK, data bytes, ACK, stop condition); if core 0's
+  `writeto()` and core 1's `readfrom()` interleave their register pokes to
+  the same I2C controller mid-transaction, the controller's internal
+  protocol state machine sees a sequence of phases that doesn't correspond
+  to any valid single transaction — the bus doesn't reject this because it
+  has no concept of "transaction ownership" to enforce; only software
+  discipline (the lock) provides that.
+
 ## Cheat sheet
 
 | Concept | Detail |

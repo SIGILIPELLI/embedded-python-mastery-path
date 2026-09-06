@@ -162,6 +162,57 @@ def fleet_summary(registry, now):
     }
 ```
 
+## How It Actually Works
+
+Fleet management is the one module in this course that's mostly server-side
+— but the on-device half (why `last_seen` and identity work the way they
+do) rests directly on mechanisms earlier modules established.
+
+- **`last_seen` staleness detection only means anything because MQTT's
+  last-will mechanism (Level 2 module 1) and this course's steady
+  timestamped-check-in pattern give the server an *expected* cadence to
+  compare against — the registry itself has no independent way to know a
+  device is alive except by inference from silence.** A device that
+  publishes retained, timestamped readings on a fixed interval (the
+  weather-station capstone's pattern) gives `registry.stale()` a
+  meaningful signal: no update in `max_age_s` means either the device, its
+  network path, or its power has failed — the registry can't distinguish
+  which, only that the expected heartbeat stopped, which is exactly why
+  fleet dashboards pair staleness alerts with a last-will "offline" message
+  where possible, since the will fires specifically on an *ungraceful*
+  disconnect the broker can detect faster than a timeout ever could.
+- **Telemetry batching trades exactly the same connection-cost economics
+  Level 2's weather-station capstone reasoned about for battery, applied
+  here to bandwidth and backend request volume instead of milliseconds of
+  radio-on time.** Each MQTT publish or HTTP POST (Level 1 module 8) pays
+  a fixed per-message overhead — TCP/TLS handshake amortization aside, at
+  minimum a full request/response round-trip and header overhead — so
+  batching N readings into one transmission divides that fixed cost by N,
+  the same amortization logic that makes longer deep-sleep cycles cheaper
+  per-reading than frequent short ones.
+- **The fixed diagnostic command dictionary works as a security boundary
+  specifically because Python's `dict.get()` lookup by string key cannot
+  be tricked into calling anything outside the dict's own literal
+  contents — there is no `eval()`, no dynamic attribute resolution by
+  external string, anywhere in the dispatch path.** `_DIAG_COMMANDS.get(
+  command_name)` either returns one of the four specific lambda objects
+  written into the source at build time, or `None` — an attacker
+  controlling `command_name` has exactly as much power as choosing which
+  of four pre-approved, read-only functions runs, which is the concrete
+  mechanism making this meaningfully safer than exposing `exec()` or
+  `eval()` over the same channel (the open-REPL risk the security
+  hardening module warns against).
+- **Version fragmentation as a distinct alert from staleness reflects two
+  different failure domains this course has built up separately: per-device
+  connectivity (Level 1/2's network and power material) versus fleet-wide
+  rollout progress (Level 4 module 2's staged-hash-bucket rollout).** A
+  device can be perfectly online and healthy while still sitting on old
+  firmware because its rollout bucket hasn't been included in the current
+  wave yet, or because it failed its confirm-or-rollback health check and
+  reverted — the registry's version-count aggregation is really a proxy
+  for "is the OTA staging mechanism actually converging the fleet toward
+  one version," a question no single device's own state can answer.
+
 ## Cheat sheet
 
 | Layer | Purpose |

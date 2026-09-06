@@ -152,6 +152,53 @@ Note the server is **blocking**: while waiting in `accept()`, nothing else
 runs. That's the exact problem `uasyncio` solves in module 9, and the
 capstone's dashboard is this server rebuilt async.
 
+## How It Actually Works
+
+`network` and `socket` are thin Python wrappers over the ESP32's WiFi
+firmware blob and lwIP TCP/IP stack — most of the real work happens in C
+code baked into MicroPython's build, not in the interpreter.
+
+- **The WiFi radio runs its own firmware, separate from your MicroPython
+  program.** The ESP32's WiFi/Bluetooth subsystem is driven by a closed-
+  source blob running on internal state machines that handle association,
+  authentication, and the 802.11 MAC layer — `wlan.connect()` just posts a
+  request to that subsystem and polls a status flag; the actual handshake
+  (probe, auth, association, DHCP) happens asynchronously in radio firmware
+  while your Python `while not wlan.isconnected()` loop spins. This is why
+  connecting has a real, variable wait: `isconnected()` is checking on
+  genuine RF-layer negotiation, not a Python-side state change.
+- **`requests`/`urequests` builds raw HTTP text and manages a `socket`
+  directly — there's no connection pooling, no keep-alive management, no
+  urllib3 underneath.** Every `requests.get()` call opens a fresh TCP
+  socket, sends a hand-assembled HTTP/1.0 or 1.1 request line and headers as
+  bytes, and parses the response by scanning for `\r\n` — hundreds of times
+  simpler than CPython's `requests`, which is exactly why `.close()`
+  matters so much: the ESP32's lwIP stack has a small, fixed pool of TCP
+  Control Blocks (often single digits of concurrent sockets), and a
+  response object you forget to close holds one open until the underlying
+  socket's own timeout eventually reclaims it — potentially locking you out
+  of new connections well before you'd expect resource exhaustion on a
+  desktop.
+- **DNS resolution and the TCP/IP stack itself are lwIP, a C library
+  compiled into the firmware, not Python.** `socket.getaddrinfo()` calls
+  straight into lwIP's resolver; the three-way handshake, retransmission
+  timers, and checksum computation for every packet you send with
+  `conn.send()` are all lwIP state-machine code running outside the VM.
+  Python only sees the boundary — bytes in, bytes out — which is also why
+  `try/except OSError` is the correct universal guard: lwIP surfaces
+  virtually every network failure (timeout, reset, unreachable, DNS
+  failure) as the single generic `OSError` with different `errno` values,
+  rather than the rich exception hierarchy `requests` gives you on desktop.
+- **The blocking `accept()` server blocks because there's no event loop
+  underneath it — the VM is simply parked waiting on lwIP to signal a new
+  connection.** `s.accept()` calls into lwIP and yields the CPU to the
+  scheduler/idle loop until a SYN packet arrives; nothing else in your
+  program runs meanwhile because there is no cooperative scheduler managing
+  that wait. `uasyncio` (module 9) doesn't change what lwIP does — it wraps
+  the same non-blocking socket primitives lwIP exposes in a `select()`-like
+  poll loop so Python code can do other things while waiting, which is the
+  precise mechanical difference between this server and its async rewrite.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

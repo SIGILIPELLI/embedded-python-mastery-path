@@ -166,6 +166,53 @@ state change, not on a timer.
     memory-constrained board can trigger the fragmentation issues from
     Level 1 if done repeatedly rather than once at startup.
 
+## How It Actually Works
+
+WS2812 timing and the framebuffer model both push Python code right up
+against the limits of what a bytecode interpreter can do reliably, which is
+why both areas come with sharp hardware-level caveats.
+
+- **WS2812 has no clock line — timing itself *is* the protocol, encoded as
+  precisely-shaped voltage pulses**, and this is why `neopixel.write()` is
+  implemented in C, not Python. Each bit is sent as a high pulse of a
+  specific duration (roughly 350ns for a "0" bit, 700ns for a "1" bit, with
+  tolerances in the tens of nanoseconds) — timing far tighter than the VM's
+  bytecode dispatch loop could hit consistently, since each opcode's
+  execution time varies with what else is happening. MicroPython's
+  `neopixel` module drops into a hand-timed assembly/C routine (using
+  cycle-counted delay loops or a hardware-assisted RMT peripheral on
+  ESP32) specifically to hit those nanosecond windows — a rare case where a
+  "machine module" function does real, timing-critical work in native code
+  rather than just poking a register once.
+- **This is exactly why an interrupt firing mid-`write()` can corrupt
+  colors.** If a `Pin.irq` handler or `Timer` callback interrupts the CPU
+  in the middle of the WS2812 bit-banging routine, the pause it introduces
+  can stretch a "0" pulse long enough to be misread as a "1" by the LED's
+  own tiny onboard controller (each WS2812 has its own decode logic
+  latching each bit as it arrives) — one late interrupt reshapes the
+  electrical signal the LED is actively sampling, and there is no retry:
+  the bits are gone once mis-timed.
+- **The `framebuf` module is one contiguous `bytearray` in RAM, and every
+  drawing call (`pixel`, `line`, `text`) is bit or byte manipulation
+  against that array — genuinely fast because it never touches the display
+  hardware.** `oled.show()` is the only call that streams that buffer over
+  I2C/SPI to the display controller's own separate memory. On a monochrome
+  128×64 panel that's 1 bit per pixel = 1024 bytes; RGB565 on a 240×240
+  color panel is 2 bytes per pixel × 57,600 pixels ≈ 112 KB — a genuinely
+  large chunk relative to the ESP32's total heap, which is why the warning
+  about allocating a big FrameBuffer repeatedly (rather than once, at
+  startup) connects directly back to Level 3's memory-fragmentation
+  material: a 112 KB buffer needs 112 KB of *contiguous* free heap, and
+  repeated alloc/free cycles of large buffers are exactly what fragments a
+  small heap until no single free block is big enough anymore.
+- **"Redraw on change, not on a timer" is really about I2C bus bandwidth,
+  not aesthetics.** Pushing a 1 KB OLED framebuffer over I2C at 400 kHz
+  takes roughly 20ms just for the raw bit transfer, plus per-transaction
+  overhead — calling `show()` every 20ms loop iteration when nothing
+  changed wastes that bus time (and, on a shared I2C bus, delays other
+  devices' transactions), for zero visible benefit since the panel's pixels
+  are identical to what's already latched into its display RAM.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

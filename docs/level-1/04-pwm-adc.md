@@ -136,6 +136,46 @@ def scale(x, in_min, in_max, out_min, out_max):
 angle_deg = scale(pot.read(), 0, 4095, 0, 180)   # pot position → servo angle
 ```
 
+## How It Actually Works
+
+Neither PWM nor the ADC are things Python "does" — they are dedicated
+silicon peripherals on the ESP32 die that MicroPython merely configures and
+reads; the interpreter is barely in the loop once they're running.
+
+- **PWM runs entirely in hardware, independent of your Python code's
+  speed.** `PWM(Pin(5), freq=1000)` loads a divider and a compare value into
+  the LEDC (LED Controller) peripheral's registers — a small timer/comparator
+  circuit that toggles the pin's output driver on its own, driven by the
+  chip's clock, with zero CPU involvement after setup. This is precisely why
+  `led.duty_u16(duty)` inside a `time.sleep_ms(10)` loop still produces a
+  perfectly clean, glitch-free 1 kHz waveform even though the *Python* loop
+  driving the fade is running orders of magnitude slower than 1 kHz — the
+  peripheral, not the interpreter, is the thing keeping time at 1 kHz.
+  `duty_u16()` just writes a new compare value; the hardware comparator does
+  the actual switching between calls.
+- **The servo pulse is the same peripheral, reinterpreted.** There's no
+  separate "servo mode" in the ESP32 — a servo signal is just PWM at 50 Hz
+  with the duty cycle chosen so the *absolute pulse width* (not the
+  percentage) falls in the 0.5–2.4 ms window the servo's own internal
+  circuitry expects. The math in `angle()` is converting from "percentage of
+  a 20 ms period" (what the LEDC hardware wants) to "microseconds of high
+  time" (what the servo's decoder actually measures) — two different mental
+  models of the exact same electrical signal.
+- **The ADC is a successive-approximation converter, and `atten()` changes
+  an analog reference voltage, not a software scale factor.** Internally,
+  the ESP32's SAR ADC compares the input voltage against an internal
+  reference through a binary-search-like process (12 comparisons for a
+  12-bit result), completing in microseconds. `ATTN_11DB` doesn't rescale
+  the *number* you get back in software — it switches in an analog
+  attenuator ahead of the comparator so a 3.3 V input actually lands within
+  the converter's native ~1.1 V comparison window. Skip `atten()` and a pin
+  at 3.3 V will read as if it were near 1.1 V territory, clipped — a
+  hardware ceiling no amount of Python-side math can fix after the fact.
+  Read noise (the jitter this module tells you to average away) comes from
+  real analog sources — reference voltage ripple, the SAR's own comparator
+  noise, capacitive coupling from a switching PWM signal on a nearby pin —
+  not from anything the interpreter introduces.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

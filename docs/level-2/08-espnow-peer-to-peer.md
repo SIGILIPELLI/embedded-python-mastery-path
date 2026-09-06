@@ -174,6 +174,48 @@ while True:
     guarantee, add your own application-level acknowledgment (base station
     ESP-NOW-sends a tiny ack back) if that matters for your use case.
 
+## How It Actually Works
+
+ESP-NOW sidesteps the entire TCP/IP stack (and lwIP from module 8's HTTP
+work) by riding directly on the WiFi radio's raw 802.11 action frames — a
+genuinely different, much thinner path than any socket-based protocol in
+this course.
+
+- **ESP-NOW encapsulates its payload inside 802.11 vendor-specific action
+  frames — a standard WiFi MAC-layer mechanism for carrying
+  manufacturer-defined data — rather than inside an IP packet.** This is
+  why it needs no AP, no IP address, no DHCP, and no `socket` module at
+  all: there's no network layer involved, just a MAC-addressed frame handed
+  straight to the radio. `sta.disconnect()` before enabling ESP-NOW matters
+  because the radio can only be tuned to one channel at a time, and an
+  active AP association pins the channel to whatever the AP uses — ESP-NOW
+  peers must share that same channel to hear each other, which is the
+  mechanical root of the "peers must share a WiFi channel" warning.
+- **`add_peer()` isn't a network handshake — it's populating a local
+  encryption/routing table entry in the WiFi driver so the radio knows to
+  accept and (optionally) decrypt frames from that specific MAC.** ESP-NOW
+  supports per-peer AES encryption keys; the peer list is local state on
+  each device, not a shared session either side negotiates — which is why
+  "pairing" here means both devices independently deciding to trust a MAC
+  address, not a two-way protocol exchange like a BLE bond.
+- **`send()` raising `OSError` reflects the 802.11 MAC layer's own
+  acknowledgment mechanism, not application-level delivery.** Every unicast
+  802.11 frame expects a hardware-level ACK from the receiving radio within
+  a short timeout; ESP-NOW's `send()` waits on that MAC-layer ACK (which
+  confirms only "a radio at that MAC heard the frame cleanly," not "the
+  Python program running there processed it") and raises when it never
+  arrives — a peer that's powered off, out of range, or on a different
+  channel simply never generates that ACK, which is the exact gap the
+  "no built-in delivery guarantee" warning is describing.
+- **Broadcast frames (`ff:ff:ff:ff:ff:ff`) skip the ACK mechanism entirely**
+  — 802.11 broadcast has no concept of per-recipient acknowledgment because
+  the sender doesn't know who's listening, so a broadcast `send()` succeeds
+  as soon as the radio transmits the frame, regardless of whether anyone
+  actually received it. That's the mechanical reason broadcast is suited to
+  best-effort discovery pings (where a missed one just means "try again in
+  5 seconds") but not to reliable data delivery — there's no failure
+  signal to catch even in principle.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

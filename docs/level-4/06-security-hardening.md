@@ -143,6 +143,64 @@ how good the TLS configuration is — per-device credentials
 (provisioning module) are what contain a single-unit compromise to that
 one unit.
 
+## How It Actually Works
+
+TLS and flash encryption both rest on real cryptographic and silicon
+mechanisms that MicroPython's `ssl` module and filesystem API merely
+expose — understanding what's happening underneath explains exactly why
+`CERT_NONE` and XOR obfuscation give up almost everything they claim to
+provide.
+
+- **TLS certificate verification is a chain of cryptographic signature
+  checks up to a root the client already trusts, and `CERT_NONE` skips
+  every one of them while still doing the encryption handshake.** The TLS
+  handshake negotiates a shared symmetric key via asymmetric cryptography
+  regardless of `verify_mode` — that's what "encrypted but authenticates
+  nothing" means literally: `context.wrap_socket()` still performs the key
+  exchange and the resulting connection is genuinely encrypted in transit,
+  but skipping the certificate chain walk means the client never checks
+  that the public key it just negotiated with actually belongs to the
+  server it thinks it's talking to, which is exactly the gap a
+  man-in-the-middle exploits by presenting its own certificate instead —
+  the client happily encrypts to the attacker's key because nothing ever
+  compared it against anything.
+- **The CPU/RAM cost the module describes (RSA/ECC operations, handshake
+  buffers) is measuring genuine big-integer modular arithmetic —
+  thousands of multiply operations on numbers hundreds of bits wide — run
+  on the same bytecode-interpreted or, more likely, C-library-backed math
+  that has no hardware acceleration on most MicroPython ports.** ECC
+  beating RSA on constrained CPUs isn't a MicroPython-specific claim: for
+  equivalent security strength, elliptic-curve operations require
+  meaningfully smaller key sizes and fewer modular multiplications than
+  RSA's, a mathematical property of the underlying algorithms
+  independent of any particular Python or C implementation — it's why
+  the recommendation holds on any constrained device, embedded Python or
+  not.
+- **Flash encryption is a hardware AES engine sitting between the CPU and
+  the flash controller, transparently encrypting every byte on the way to
+  flash and decrypting every byte on the way back, keyed by a value
+  burned into eFuses that software can never read out once encryption is
+  enabled.** This is a fundamentally different guarantee than any
+  application-level scheme: because the encryption/decryption happens in
+  the memory bus path itself, MicroPython's `open()`/`write()` calls are
+  completely unaware it's happening — the filesystem layer never sees
+  plaintext-versus-ciphertext as a concept, unlike an application-level
+  XOR cipher, which necessarily has the plaintext sitting in RAM (and
+  briefly in flash-bound write buffers) at some point the attacker's model
+  needs to account for, and whose "key" is just another value stored
+  somewhere in the same unencrypted flash it's meant to protect.
+- **JTAG/SWD access bypasses the entire software stack, including flash
+  encryption's read-path protections in some threat models, because it's
+  a direct electrical interface to the CPU core's debug port** — a debug
+  probe can halt the CPU, single-step instructions, and read/write
+  arbitrary memory addresses (including, on many chips, live decrypted
+  data as it exists in RAM after the flash-encryption engine has already
+  decrypted it for execution) without going through any API MicroPython
+  or the OS-less firmware ever defines. This is why burning the
+  disable-JTAG eFuse is treated as a hard requirement rather than a nice-
+  to-have: it's not a software toggle an attacker with physical access
+  could re-enable, it's a physical, one-way silicon lockout.
+
 ## Cheat sheet
 
 | Hardening step | Defends against |

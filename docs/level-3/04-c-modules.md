@@ -174,6 +174,56 @@ Python side loses its last reference).
   development loop, which is a real reason to reach for viper first and
   only drop to C when viper's ceiling is actually hit.
 
+## How It Actually Works
+
+Writing a C module means stepping outside the VM entirely and working
+directly against MicroPython's own C runtime — the same `mp_obj_t`
+machinery that every built-in module (`machine`, `network`, even the
+bytecode interpreter itself) is implemented on top of.
+
+- **`mp_obj_t` is a tagged pointer/value, not a real object header the way
+  CPython's `PyObject*` is — this is the same small-int-in-pointer trick
+  from module 1, generalized.** On most ports, the low bits of an `mp_obj_t`
+  encode whether it's a small integer packed directly into the value, a
+  qstr (interned string), or a genuine pointer to a heap-allocated GC
+  object; `mp_obj_get_int()` and `mp_obj_new_int()` exist specifically to
+  hide that bit-tagging scheme from C module authors — treating an
+  `mp_obj_t` as a raw C integer (skipping the conversion function) happens
+  to "work" for small values purely by coincidence of the tagging bit
+  pattern, then breaks unpredictably for larger values or different object
+  kinds, which is exactly the beginner trap this module calls out.
+- **`mp_raise_ValueError` unwinding via `longjmp` reflects how MicroPython
+  implements Python exceptions in C at all — there is no C++ exception
+  machinery available, so the interpreter uses `setjmp`/`longjmp` to
+  simulate stack unwinding.** Every `try/except` block in the interpreter
+  compiles to code that calls `setjmp` to record a recovery point; raising
+  an exception (from Python code or from `mp_raise_*` in C) calls
+  `longjmp` back to the nearest recorded point, skipping every stack frame
+  in between without running their C-level cleanup code — which is exactly
+  why the module warns that C-allocated resources need to be safe before
+  that call: `longjmp` bypasses ordinary C function returns entirely, so
+  there's no equivalent of a C++ destructor or Python's `finally` running
+  automatically along the way.
+- **`mp_obj_malloc` allocates through the same GC-tracked heap and bitmap
+  allocator described in module 1** — a C module's custom type instances
+  are ordinary blocks in that same fixed-size-block heap, marked reachable
+  during the same mark phase (by walking the `mp_obj_base_t` type
+  information every GC-managed object starts with) and swept the same way.
+  Using bare `malloc()` instead allocates from the C library's separate
+  heap region, invisible to the mark-sweep walk — the collector has no way
+  to know that memory exists, let alone that a Python object references it,
+  which is the concrete mechanism behind "the collector will never see it."
+- **The module/type registration tables (`mymodule_globals_table`,
+  `counter_locals_dict_table`) are the same dict-like "map" structure every
+  Python object's attributes live in, just built at C-compile time instead
+  of dynamically at runtime.** `MP_DEFINE_CONST_DICT` produces a `const`
+  data structure the linker places in flash rather than RAM — this is why
+  built-in modules and their methods cost no heap space at all: the
+  attribute lookup that module 2 describes as "a dict lookup" for globals
+  and attributes is, for C-registered names, a lookup into a table that
+  was never allocated on the heap in the first place, existing instead as
+  read-only data baked into the firmware image.
+
 ## Cheat sheet
 
 | Need | Reach for |

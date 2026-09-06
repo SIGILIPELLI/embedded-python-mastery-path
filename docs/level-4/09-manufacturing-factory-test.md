@@ -163,6 +163,59 @@ signal: a yield drop concentrated entirely in one component (say,
 component batch or a specific step in assembly, rather than leaving
 "yield dropped, cause unknown" as the only available conclusion.
 
+## How It Actually Works
+
+Factory test firmware and the flashing station both sit at a boundary
+where software verification is standing in for physical inspection —
+worth being precise about what each check can and can't actually prove.
+
+- **The firmware-size check catches a specific, common tooling failure
+  mode: `os.path.getsize()` reading the staging file's actual byte count
+  from the filesystem's own metadata, compared against an expected value
+  captured from the known-good build artifact.** This is a filesystem-
+  level integrity check, not a content check — it catches "wrong file
+  entirely" (a leftover artifact from yesterday's batch, a truncated
+  download) cheaply because file size is metadata the OS already tracks
+  and can report in constant time, but it says nothing about whether the
+  *bytes themselves* are the ones intended, which is exactly why the
+  module points back to module 2's SHA-256 hash verification as the
+  complementary, stronger check — size catches gross mistakes fast; hash
+  catches everything, at the cost of actually reading and hashing the
+  full file.
+- **Each `try/except` in `factory_self_test` isolating one peripheral's
+  check is the same principle as the `except OSError` patterns throughout
+  this course, applied for a different reason: not resilience in a
+  deployed device, but diagnostic precision on a factory line where a
+  human needs to act on the specific result.** Without per-peripheral
+  isolation, an unhandled exception from, say, a dead LED driver would
+  propagate up and abort the whole test function before the sensor and
+  radio checks ever ran — turning "one confirmed bad component" into
+  "unknown state, technician has to manually re-run pieces to find out
+  what's actually wrong," a meaningfully worse outcome on a production
+  line processing hundreds of units per shift.
+- **Zero-padded serial numbers being sortable as plain strings is a
+  literal consequence of how string comparison works — character by
+  character, left to right, by code point value — which is the identical
+  mechanism behind the version-string comparison pitfall in module 2.**
+  `"000482" < "004820"` compares correctly character-by-character because
+  both strings are the same length; `"482" < "4820"` also happens to sort
+  "correctly" by accident here, but `"482"` vs `"51"` would not
+  (`'4' < '5'` as characters, giving the wrong order for the numbers 482
+  and 51) — fixed-width zero-padding is what guarantees lexicographic and
+  numeric order coincide for every value in range, not a stylistic choice.
+- **Yield tracking's value as an early-warning signal comes from treating
+  each unit's pass/fail as one sample from an underlying, otherwise-
+  invisible defect rate — a dropping yield is literally the same signal a
+  statistical process-control chart would flag, just computed here as a
+  simple running fraction rather than a formal control chart.** A
+  component batch with a marginal defect rate produces failures that look
+  individually like noise (one bad sensor here, one there) but aggregate
+  into a visible trend in `yield_rate()` well before any single failure
+  would prompt an investigation on its own — `failure_breakdown()`
+  turning that trend into a per-component count is what converts "yield
+  dropped" into an actionable hypothesis a technician can actually chase
+  down on the assembly line.
+
 ## Cheat sheet
 
 | Stage | Purpose |

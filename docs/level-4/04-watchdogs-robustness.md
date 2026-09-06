@@ -177,6 +177,61 @@ by a recoverable safe state.
   hangs; the crash counter catches fast, repeated crashes that never
   hang long enough for the watchdog to matter.
 
+## How It Actually Works
+
+Every pattern here works by having something *outside* the thing that
+might fail be the mechanism that detects and recovers from the failure —
+software cannot reliably supervise itself once it's the thing that's stuck.
+
+- **`machine.WDT` is a hardware countdown timer, wired directly to the
+  chip's reset line, exactly like the RP2040/ESP32 discussion in Level 2
+  module 9 — the crucial detail here is that its countdown logic runs on a
+  clock and comparator circuit entirely separate from the CPU pipeline
+  executing your Python bytecode.** `wdt.feed()` is a single register
+  write reloading the countdown value; if that write doesn't happen before
+  the counter reaches zero, dedicated logic asserts a physical reset
+  signal to the CPU core. This is precisely why it catches failures no
+  Python-level exception handler ever could: a truly wedged interpreter
+  (spinning in a C-level blocking call, or stuck because the GC's mark
+  phase hit a corrupted pointer) has stopped executing Python bytecode
+  altogether, so there's no exception-handling code running anywhere to
+  catch anything — only a mechanism living outside the interpreter can
+  intervene.
+- **This is also exactly why feeding from an independent `Timer` callback
+  defeats the watchdog: the timer peripheral and the main loop are two
+  separate schedulable things, and a hang in the main loop doesn't stop
+  the timer's hardware-driven interrupt from firing on its own schedule.**
+  The `Timer` callback executes regardless of whether `main_loop()` ever
+  reaches its `wdt.feed()` line — it has no path back to checking that
+  fact, so a watchdog fed this way degenerates into "always resets the
+  reload register on schedule," providing zero information about whether
+  the actual application is alive.
+- **Write-to-temp-then-rename works for brownout survival for the same
+  copy-on-write reason it works for OTA (module 2) and for the crash
+  counter here — LittleFS's directory-entry update is a single small write
+  a partial power interruption can only leave in one of two states: the
+  old entry (rename didn't complete) or the new one (it did), never a
+  hybrid.** A brownout specifically threatens flash writes because flash
+  program/erase operations require a stable, sufficiently high voltage to
+  correctly set the floating-gate transistor charge state — a voltage dip
+  mid-write can leave a memory cell in an indeterminate charge level,
+  corrupting exactly the bytes being written at that instant; data already
+  committed to flash before the dip is unaffected, which is why "the old
+  file stays intact" is a real hardware guarantee, not just a filesystem
+  convention.
+- **`boot.py` running the crash-count check before `main.py` matters
+  because MicroPython's boot sequence executes `boot.py` and `main.py` as
+  two separate, sequential file-level imports — a crash in `main.py`
+  cannot prevent `boot.py`'s code from running on the *next* boot,
+  because it's a completely separate execution of the interpreter from
+  scratch.** This is the same "every wake/boot restarts fresh" fact from
+  Level 2 module 3's deep-sleep material, applied to crash recovery: since
+  nothing in RAM survives a reset regardless of cause, the *only* place a
+  crash-loop counter can live to be checked on the next attempt is
+  persistent storage (the filesystem), read by code (`boot.py`) that runs
+  unconditionally before the potentially-broken code gets a chance to run
+  again.
+
 ## Cheat sheet
 
 | Mechanism | Catches |

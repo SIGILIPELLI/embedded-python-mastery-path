@@ -176,6 +176,56 @@ Putting together modules 05, 08, and 02 into one release flow:
    fleet registry's health view (module 07) for stale-device and
    version-fragmentation signals, then widened in stages.
 
+## How It Actually Works
+
+This capstone's value is in how the individual mechanisms from Levels 1–4
+compose under one boot sequence — several modules' guarantees only hold
+because of the specific order things happen in here.
+
+- **The watchdog timeout (8000ms) has to be sized against the *slowest*
+  legitimate operation in the loop, which here is a TLS handshake
+  (module 6) plus an OTA manifest check (module 2) — both genuinely
+  variable-latency network operations riding on lwIP's TCP stack
+  (Level 1 module 8), not fixed-cost local computation.** Feeding the
+  watchdog only after `do_sample_and_report` fully succeeds (module 4's
+  rule) means the timeout window has to accommodate the true worst case of
+  every step inside that call, including a slow DNS resolution or a
+  congested TLS round-trip — undersizing it here doesn't just risk a false
+  positive, it risks a watchdog reset firing in the middle of an OTA
+  manifest fetch, which is exactly the kind of self-inflicted crash-loop
+  module 4's crash counter and module 2's confirm-or-rollback are jointly
+  designed to catch and recover from on the next boot.
+- **`boot.py`'s crash-count check running unconditionally before `main.py`
+  is possible only because MicroPython's boot sequence treats them as two
+  genuinely separate file imports (module 4's mechanism)** — this is what
+  lets the capstone's factory-test strap check and the safe-mode escape
+  hatch coexist safely: a hardware GPIO strap read in `boot.py` decides
+  *which* subsequent code path runs, and because that decision happens
+  before either the factory-test module or the full application module is
+  ever imported, a bug in one path (say, a crash in `run()`) cannot
+  prevent the strap-check logic itself from running correctly on the next
+  boot attempt — it's not part of what could be crashing.
+- **`gc.collect()` at the loop's bottom, not inside `do_sample_and_report`,
+  is the same lock-free-boundary reasoning from the high-speed DAQ project
+  (Level 3 module 10), applied to a TLS handshake instead of a cross-core
+  lock.** A GC pause landing mid-handshake would stack its own
+  multi-millisecond stop-the-world cost (module 1, Level 3) on top of
+  network latency already eating into the watchdog's budget — placing the
+  explicit collection at the one point per cycle where nothing is
+  in-flight (no open socket mid-handshake, no half-written file) means the
+  *automatic* collector-triggered pause (which fires unpredictably,
+  whenever an allocation can't be satisfied) is far less likely to land at
+  the worst possible moment instead.
+- **The factory-test strap being a physical GPIO pull rather than a
+  software flag is a direct application of the same "physical, not
+  software, lockout" principle the security hardening module argues for
+  with JTAG disable fuses** — a GPIO read reflects real, present voltage
+  on a physical pin at boot; there is no remote command, corrupted config
+  value, or compromised credential that can spoof holding a hardware strap
+  low unless an attacker already has physical access to the board, which
+  is precisely the threat-model boundary module 6's table draws between
+  network-only and physical-access attackers.
+
 ## Cheat sheet — which module each capstone piece draws from
 
 | Capstone piece | Module |

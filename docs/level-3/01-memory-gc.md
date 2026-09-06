@@ -202,6 +202,57 @@ automatic collection; lowering it collects more often (smaller, more
 frequent pauses) at the cost of more total time spent in GC — a knob
 worth tuning per application, not a fix for a genuine leak.
 
+## How It Actually Works
+
+Everything above follows from two concrete implementation choices in
+MicroPython's allocator and collector — a block-based heap with
+fixed-size allocation units, and a non-moving mark-sweep collector.
+
+- **The heap is divided into fixed-size "blocks" (typically 16 bytes on
+  32-bit ports), and every allocation rounds up to a whole number of
+  blocks tracked by a separate bitmap.** Two bits per block record
+  whether it's free, the head of an allocation, or a continuation of one
+  — there is no per-object header stored inline the way CPython's
+  `PyObject` carries a type pointer and refcount inside the object itself.
+  This block-and-bitmap design is exactly why the allocator has no
+  compaction: moving a live object would mean updating every pointer to
+  it throughout the heap, and MicroPython has no mechanism to find and
+  rewrite those references (no per-object indirection layer), so instead
+  it accepts fragmentation as the tradeoff for a tiny allocator that fits
+  in a few hundred bytes of code.
+- **Mark-and-sweep works in two literal passes over that bitmap.** The
+  mark phase starts from known roots (the interpreter's active stack
+  frames, global module dicts, and a few internal registries) and
+  recursively follows every pointer, flipping a "reachable" mark bit for
+  each block it visits — this recursive graph walk is exactly why
+  collection time scales with how much of the heap is *live* (more
+  reachable objects means more bitmap bits to walk and flip), not with
+  how much is garbage. The sweep phase then does one linear pass over the
+  entire bitmap, releasing any allocated block whose mark bit didn't get
+  set — a full-heap scan regardless of how many objects actually need
+  freeing, which is the other half of "collection scales with heap size."
+- **`const()` avoiding a dict lookup is possible because MicroPython
+  compiles module-level and class-level code into bytecode with named
+  global lookups (`LOAD_GLOBAL` bytecode, a hash-based dict probe)
+  precisely because Python's dynamic-scoping semantics normally require
+  it** — a name could, in principle, be reassigned at runtime. `const()`
+  is a signal to the *compiler*, not a runtime object: recognizing the
+  RHS is a literal integer, the compiler substitutes the literal value
+  directly into the bytecode stream at every use site, eliminating both
+  the `LOAD_GLOBAL` opcode and the heap slot the value would otherwise
+  occupy as a boxed int (if it exceeds the small-int range) or dict entry.
+- **The `MemoryError`-despite-`mem_free()`-looking-fine trap is a direct,
+  inevitable consequence of the fixed-block allocator having no
+  compaction.** `mem_free()` sums every free block's size across the
+  entire bitmap; a single large allocation request needs one *contiguous*
+  run of that many free blocks. Interleaved allocate/free patterns of
+  different sizes carve the free space into many small, non-adjacent
+  runs — the sum can be large while the largest single run is small. This
+  is the same structural problem heap allocators have solved for decades
+  with moving/compacting collectors, which MicroPython specifically
+  forgoes for code-size and determinism reasons appropriate to a
+  microcontroller.
+
 ## Cheat sheet
 
 | Tool / pattern | Effect |

@@ -155,6 +155,54 @@ cleanly with everything else running.
     and sensors → coroutines; microsecond-precision external signals →
     interrupts feeding a flag that a task consumes.
 
+## How It Actually Works
+
+`uasyncio` gives you concurrency without threads or an OS scheduler — the
+trick is that it is entirely cooperative, and understanding what that means
+mechanically explains every rule in this module.
+
+- **There is exactly one call stack and `asyncio.run()` owns it.** A
+  coroutine object created by calling an `async def` function doesn't run
+  anything yet — it's a suspended generator-like object. `create_task`
+  registers it with the event loop's internal list of runnable tasks. The
+  loop itself is a plain Python `while True` (implemented in
+  `uasyncio/core.py`, which ships as ordinary MicroPython source you can
+  read on the filesystem) that repeatedly picks the next task whose wake-up
+  time has arrived and resumes it by calling `.send(None)` on the
+  underlying generator — resuming execution exactly at the last `await`
+  point. There is no separate stack per task the way there is per OS
+  thread; each task's "stack" is just the frozen local-variable state a
+  generator object carries.
+- **`await asyncio.sleep_ms(n)` doesn't block anything — it yields a value
+  the scheduler interprets as "wake me after n ms" and returns control to
+  the loop.** Mechanically, `sleep_ms` is a generator function that
+  computes a wake time, yields once, and the event loop's dispatch code
+  reads that yielded value, files the task under a time-sorted wait queue,
+  and moves on to run whatever else is ready *right now*. This is why
+  `time.sleep()` inside a task is "the cardinal sin": `time.sleep()` is a
+  hard busy-wait in the VM that never returns control to the event loop at
+  all — the loop has no way to preempt it, because there is no preemption
+  anywhere in this system, only voluntary yielding at `await` points.
+- **This is exactly why a long computation without an `await` starves every
+  other task** — with no OS timer interrupting the VM to force a context
+  switch (unlike a real OS thread scheduler), the *only* mechanism that
+  hands control back to the loop is your code reaching an `await`. A tight
+  `for` loop crunching numbers for 200ms holds the entire single-core CPU
+  for that whole 200ms; `await asyncio.sleep_ms(0)` is a deliberate,
+  explicit yield point inserted purely so the scheduler gets a chance to
+  run other ready tasks, even though the sleep duration is nominally zero.
+- **Shared state needs no locks because there is no true parallelism to
+  race against.** On a real OS with preemptive threads, two threads
+  incrementing the same dict value can interleave mid-operation and corrupt
+  it. Here, a task runs uninterrupted C-bytecode-execution from one `await`
+  to the next — the VM never switches tasks mid-statement — so any code
+  between two `await` points is effectively atomic with respect to every
+  other task. That guarantee evaporates the moment a `Pin.irq` handler
+  (module 5) is in the mix, because interrupts *are* asynchronous relative
+  to the event loop and can genuinely interrupt a task mid-statement — the
+  reason the tip above draws the interrupts-vs-coroutines line where it
+  does.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

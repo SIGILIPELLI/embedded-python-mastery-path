@@ -162,6 +162,59 @@ builds on directly.
   unguarded chain of calls that leaves the device stuck if any one of
   them throws.
 
+## How It Actually Works
+
+The layering advice here isn't just software-engineering taste — it maps
+directly onto how MicroPython's `import` system and its lack of a
+mocking/dependency-injection framework actually behave at runtime.
+
+- **`import machine` at module scope executes immediately, at import time,
+  and fails hard if the hardware module doesn't exist in the running
+  interpreter** — on desktop CPython, `machine` simply isn't a module that
+  exists, so any file with `import machine` at the top raises
+  `ModuleNotFoundError` the instant Python tries to load it, before a
+  single line of the module's actual logic runs. This is the concrete,
+  mechanical reason "business logic should be import-safe on desktop"
+  isn't a style preference: a module with hardware imports at the top
+  literally cannot be imported at all off-device, regardless of whether
+  the specific function being tested ever touches a pin.
+- **MicroPython caches every imported module in `sys.modules`, exactly like
+  CPython — a module's top-level code runs exactly once per boot, the
+  first time anything imports it, and every subsequent `import` just
+  returns the cached module object.** This is why `config.py`'s
+  `_validate()` running "at load time" genuinely means once, at whatever
+  point in the boot sequence `load()` is first called — not every time a
+  service reads a config value later. It's also why side effects at
+  *module* scope (rather than inside a function) are dangerous in
+  practice: a driver module that opens an I2C bus as a module-level
+  statement runs that bus-open exactly once, at whatever moment something
+  first imports it, which can be an awkward, hard-to-predict point in a
+  complex import graph — hence pushing side effects into `__init__`
+  methods called explicitly from `main.py`'s boot sequence, where the
+  order is visible and deliberate.
+- **Dependency injection works here for the same reason it works in any
+  language: MicroPython's object model has no special-cased "final" or
+  compile-time-bound method dispatch, so passing a `FakeSensor` object
+  with a matching `read()` method is genuinely indistinguishable, at the
+  bytecode level, from passing a real driver object.** `LOAD_ATTR`
+  resolves `self._sensor.read` by walking the actual object's type at
+  runtime (module 2's lookup-chain mechanism) — there is no interface or
+  type contract enforced anywhere, so any object exposing the right method
+  names satisfies `TelemetryService`'s needs, real hardware or not. This
+  duck-typing is exactly what makes constructor-injected fakes work without
+  any mocking framework, and it's a direct consequence of Python having no
+  static type system to route around.
+- **Raising `ValueError` on an illegal state transition, rather than
+  logging and continuing, matters more here than in a desktop app because
+  there's no process supervisor watching stderr** — an unhandled exception
+  in MicroPython propagates up the call stack exactly per Level 2 module
+  9's mechanics, and without an explicit top-level catch-all (the crash-
+  logging wrapper from that module), it eventually reaches `main.py`'s
+  outer scope and the interpreter halts or resets, depending on the boot
+  configuration — turning a silently-tolerated bad transition into a
+  visible, logged failure rather than a device that limps along in an
+  undefined combination of states nobody designed for.
+
 ## Cheat sheet
 
 | Principle | What it prevents |

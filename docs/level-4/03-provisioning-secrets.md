@@ -155,6 +155,54 @@ secrets *out of the shared firmware image* and *out of paths that get
 casually logged, backed up, or transmitted* — genuine at-rest
 encryption is a separate, chip-dependent guarantee layered on top.
 
+## How It Actually Works
+
+The mechanisms behind provisioning trace back to what's physically fixed at
+manufacture time versus what's writable in the field, and to what an
+attacker with the flash chip in hand can and can't recover.
+
+- **`machine.unique_id()` reads bytes burned into one-time-programmable
+  (OTP) fuses or a factory-set efuse block during chip manufacturing** —
+  on the ESP32 specifically, this draws from the chip's MAC address or a
+  dedicated eFuse region written once at the factory and physically
+  incapable of being rewritten afterward by software. This is the concrete
+  reason it survives a factory reset or a full reflash: those operations
+  can only touch flash memory (the LittleFS filesystem and the firmware
+  partitions), an entirely different physical memory technology from the
+  fuse-based ID storage, which software has no write access to at all.
+- **A firmware image is one binary blob flashed identically to every unit
+  off the same production line — there's no per-unit variation possible
+  inside it unless something writes device-specific bytes into flash after
+  that image is written**, which is exactly what provisioning is: a
+  deliberate, one-time step that writes to the filesystem region (not the
+  frozen firmware partition from Level 3 module 8) *after* manufacturing,
+  using data that couldn't have been known when the firmware was built.
+  This is why "hardcode it" categorically cannot work for per-network or
+  per-customer secrets — the firmware image is fixed before any given
+  unit's deployment context exists.
+- **AP mode and BLE provisioning both work by using the ESP32's radio in a
+  mode where it's the thing being connected *to*, not connecting out** —
+  `network.WLAN(network.AP_IF)` configures the WiFi hardware's MAC/PHY to
+  broadcast its own beacon frames and accept incoming associations, the
+  mirror image of the station-mode framing this course has otherwise
+  covered. Because that's a distinct radio mode from station mode
+  (module 8, Level 1), a device can't simultaneously be a fully joined
+  station on the customer's future network and an open AP a phone can
+  reach — which is exactly why provisioning is a sequential
+  AP-then-reboot-into-station flow rather than something that runs
+  alongside normal operation indefinitely.
+- **"Not encrypted at rest" is a statement about how LittleFS stores bytes
+  — plain, unencrypted data in flash sectors any tool with physical flash
+  access (a SPI flash reader, `esptool.py --port ... read_flash`) can dump
+  and parse directly**, unless the specific chip's flash encryption
+  hardware (a real cryptographic engine transparently encrypting/decrypting
+  flash traffic, covered in the security hardening module) is enabled at
+  the hardware level. Writing secrets to `secrets.json` instead of
+  hardcoding them solves the *per-device-uniqueness* problem — it does
+  nothing by itself against someone who desolders the flash chip, which is
+  the honest boundary this module draws between "not baked into the shared
+  image" and "genuinely protected."
+
 ## Cheat sheet
 
 | Concern | Approach |

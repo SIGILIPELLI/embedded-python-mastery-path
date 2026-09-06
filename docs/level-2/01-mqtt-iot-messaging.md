@@ -162,6 +162,52 @@ you're paying.
     internal state. Set a flag in the callback and act on it in the main
     loop instead.
 
+## How It Actually Works
+
+`umqtt.simple` is a small, deliberately minimal Python module (a few hundred
+lines, readable in full on the filesystem after `mip.install`) sitting
+directly on top of a raw TCP `socket` — there's no separate MQTT daemon or
+background thread doing the protocol work for you.
+
+- **MQTT is a byte-level binary protocol, and `client.connect()`/`publish()`
+  hand-assemble its packets.** Each MQTT operation (CONNECT, PUBLISH,
+  SUBSCRIBE) has a fixed binary header format — a control-packet type
+  nibble, flags, and a variable-length remaining-length field encoded as
+  1–4 bytes using a 7-bits-per-byte continuation scheme. `umqtt.simple`
+  builds these byte strings directly with `struct`-style packing and writes
+  them straight to the socket; this is why `publish()` demands `bytes` for
+  topic and payload rather than accepting `str` and encoding for you —
+  every extra convenience layer costs RAM and code size the library is
+  built to avoid.
+- **`check_msg()` doing a non-blocking read is really a `socket.settimeout(0)`
+  read wrapped in a try/except.** Calling it repeatedly in your main loop is
+  literally polling the TCP socket's receive buffer for whether the OS-level
+  (well, lwIP-level, per module 8) network stack has assembled a complete
+  MQTT packet yet. `wait_msg()` is the same code path but with a blocking
+  socket read — the *only* difference between the two functions is whether
+  the underlying `recv()` call is allowed to block the whole VM waiting for
+  bytes that haven't arrived, which is exactly why mixing `wait_msg()` into
+  a loop that also needs to publish on a timer stalls the publishes.
+- **The warning against reconnecting inside `on_message` is a reentrancy
+  rule, structurally identical to the ISR allocation ban from Level 1
+  module 5.** `check_msg()` is mid-way through parsing a packet's bytes off
+  the socket (tracking how many more bytes of payload it still expects) when
+  it calls your callback; calling `client.connect()` from inside that
+  callback tears down and rebuilds the very socket `check_msg()`'s calling
+  frame still has a live reference to, corrupting its read-state exactly the
+  way allocating inside an ISR corrupts the GC's read-state — a "don't call
+  back into code that's currently calling you" hazard, whether the caller is
+  a hardware interrupt or a still-unwinding parse loop.
+- **QoS 0 is "well supported" because it needs no bookkeeping at all** —
+  publish the bytes, forget them, no acknowledgment round-trip, no retry
+  queue, no packet-ID tracking. QoS 1/2 require the client to remember
+  in-flight packet IDs and retransmit on missing PUBACK/PUBREC — real state
+  that has to survive across `check_msg()` calls and, ideally, across
+  reconnects. `umqtt.robust`'s reconnect wrapping is a much smaller ask than
+  full QoS 2 semantics, which is exactly why the library draws the line
+  where it does rather than reimplementing the full MQTT spec on a
+  100 KB-heap device.
+
 ## Cheat sheet
 
 | Function / idiom | Purpose |

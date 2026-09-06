@@ -131,6 +131,56 @@ the **+** button in the diagram pane and wire them with drag-and-drop —
 every later module tells you exactly what to add. The same code runs
 unchanged on a real ESP32.
 
+## How It Actually Works
+
+CPython compiles your `.py` file to bytecode, caches it in a `__pycache__`
+directory, and runs it on a VM backed by a heap that can grow into whatever
+RAM the OS hands it, with a reference-counting + cyclic garbage collector
+tuned for throughput. MicroPython's compiler and VM are the same *idea* —
+stack-based bytecode interpreter — but every design decision downstream of
+that idea is reshaped by having ~100–500 KB of RAM total, not gigabytes:
+
+- **No disk cache for bytecode.** On import, MicroPython's lexer/parser
+  compiles your source to bytecode *in RAM*, on every boot, because the
+  device usually has no writable cache location that survives a power cycle
+  the way `__pycache__` does. This is why boot takes tens to hundreds of
+  milliseconds for a nontrivial `main.py` — you're paying compile cost every
+  time, not just import cost. (`mpy-cross`, covered in Level 3, precompiles
+  to `.mpy` bytecode files specifically to skip this on boot.)
+- **A single mark-and-sweep GC, no generations.** CPython's cyclic collector
+  segregates objects into three generations to avoid rescanning long-lived
+  objects. MicroPython can't afford the bookkeeping for that on a
+  microcontroller heap, so `gc.collect()` (module 3 territory) is a flat
+  mark-sweep over the whole heap — simpler, but every collection touches
+  everything currently allocated, which is one reason large heaps on
+  MicroPython pause noticeably longer per collection than small ones.
+- **Objects are laid out tighter.** A CPython `int` object carries a full
+  `PyObject` header (refcount + type pointer, 16+ bytes) plus the digit
+  array. MicroPython special-cases small integers so they fit *inside* the
+  tagged pointer itself on most ports — no heap allocation at all for
+  `x = 5`. That's not an implementation detail you can see from Python code,
+  but it's why `gc.mem_free()` doesn't move when you create small ints, and
+  why the exercise below asking about "1,000 small ints" is a genuinely
+  interesting question rather than a trick one.
+- **The VM has no JIT.** CPython 3.11+ has a specializing adaptive
+  interpreter; PyPy has a full JIT. MicroPython's bytecode interpreter is a
+  straightforward dispatch loop (`switch`/computed-goto over opcodes) with no
+  runtime specialization, because a JIT needs executable memory pages and
+  profiling infrastructure that don't fit the footprint budget. This is the
+  single biggest reason MicroPython loops run noticeably slower than
+  CPython loops for pure-Python arithmetic — Level 3's `@micropython.viper`
+  and `@micropython.native` decorators exist specifically to buy back some
+  of that speed for hot code, at the cost of dropping to a more
+  restricted, C-like subset of the language.
+- **`import network` and `import machine` are the "no OS" boundary made
+  visible.** On CPython, hardware access happens through OS syscalls the
+  interpreter never touches directly. MicroPython on a bare-metal port *is*
+  the lowest software layer above the silicon — `machine.Pin` compiles down
+  to direct register writes (module 3 shows exactly which registers), and
+  `network.WLAN` talks straight to the WiFi radio's driver blob. There is no
+  kernel underneath to mediate or protect you from a bad write; that's the
+  trade you make for booting in milliseconds with no OS at all.
+
 ## Cheat sheet
 
 | Concept | The short version |
