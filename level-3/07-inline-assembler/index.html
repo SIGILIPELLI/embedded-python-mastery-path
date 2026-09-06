@@ -1693,6 +1693,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2419,6 +2441,55 @@ catch a mistake for you.</p>
   assembly is specific to ARM Cortex-M; it does not run on the
   ESP32's Xtensa core or the RP2040's PIO at all, so this is the least
   portable tool in the whole optimization ladder</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>asm_thumb</code> is the point where MicroPython's compiler pipeline stops doing
+any translation at all — your source lines <em>are</em> the machine code, modulo a
+thin assembler that converts mnemonics to their 16/32-bit Thumb encodings.</p>
+<ul>
+<li><strong>The Python-ish syntax (<code>add(r0, r0, 1)</code>) is a lexical convenience over a
+  real assembler MicroPython embeds at compile time</strong> — it parses each line
+  as an instruction mnemonic plus operands, looks up the corresponding
+  Thumb instruction encoding (a specific bit pattern with opcode, register,
+  and immediate fields), and emits that raw encoding directly into a
+  code buffer in flash/RAM the CPU can execute in place. There is no
+  intermediate bytecode step at all, unlike viper (which still goes through
+  MicroPython's own IR before emitting native code) — <code>asm_thumb</code> functions
+  are compiled once, at decoration time, straight to the exact bytes the
+  Cortex-M's instruction fetch unit will later read.</li>
+<li><strong>Registers <code>r0</code>-<code>r2</code> carrying arguments and <code>r0</code> carrying the return
+  value isn't a MicroPython convention — it's a direct expression of the
+  ARM Architecture Procedure Call Standard (AAPCS), the same calling
+  convention every C compiler targeting Cortex-M follows.</strong> MicroPython's
+  runtime, when it calls into an <code>asm_thumb</code> function, loads the Python
+  arguments into <code>r0</code>-<code>r2</code> and branches to the function's entry point
+  exactly as C code would call another C function — which is precisely why
+  registers beyond <code>r3</code> are "reserved by the calling convention": the AAPCS
+  designates <code>r4</code>-<code>r11</code> as callee-saved, meaning any C (or MicroPython
+  runtime) code that was using them before the call is trusting them to
+  still hold the same values after it returns, and clobbering them without
+  saving/restoring silently corrupts whatever the caller was doing with
+  those registers — a bug with no exception, no traceback, just wrong
+  values appearing arbitrarily far downstream.</li>
+<li><strong>"No type system, just bit patterns in registers" is a literal
+  description of what a CPU register actually is.</strong> Every abstraction
+  layer above this one — Python's dynamic typing, viper's <code>int</code>/<code>ptr8</code>, C's
+  static types — exists specifically to give meaning to raw bits; at the
+  Thumb assembly level, a register holding <code>0xFFFFFFFF</code> is simultaneously a
+  valid unsigned 4294967295, a valid signed -1, and a valid pointer to a
+  very high memory address, and the <em>instruction</em> you apply to it (an
+  unsigned compare vs. a signed compare vs. a load) is the only thing that
+  ever disambiguates which interpretation is intended — there is no runtime
+  check anywhere in this path to catch using the wrong one.</li>
+<li><strong>The reason this tool is ARM-Thumb-only and cannot touch the ESP32's
+  Xtensa core or the RP2040's ARM cores in a portable way is that Thumb is
+  a specific, fixed instruction encoding for one CPU architecture family</strong> —
+  <code>asm_thumb</code> emits literal Cortex-M opcodes; running that same code buffer
+  on an Xtensa core (a completely different instruction set with different
+  opcodes, registers, and calling convention) would just execute garbage,
+  which is exactly why the RP2040's timing-critical work is steered toward
+  PIO (its own separate, architecture-independent state machine ISA)
+  instead of inline assembly at all.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

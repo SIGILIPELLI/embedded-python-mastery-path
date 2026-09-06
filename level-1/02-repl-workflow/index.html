@@ -812,6 +812,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2294,6 +2305,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2458,6 +2480,46 @@ to interrupt it, and you have a REPL. In the worst case (a crash-loop so
 fast you can't break in), re-flash the firmware or use
 <code>mpremote fs rm :main.py</code> the instant after a reset.</p>
 </div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>The REPL feels instant because there is no build step standing between it and
+the chip — but there's real machinery underneath the friendly <code>&gt;&gt;&gt;</code> prompt:</p>
+<ul>
+<li><strong>The REPL is just another script running in the VM.</strong> After boot, the
+  firmware calls into a small C function that reads a line, feeds it to the
+  same compiler <code>import</code> uses, compiles it to bytecode on the fly, and runs
+  it on the same interpreter loop as <code>main.py</code>. There's no separate
+  "interactive mode" binary — <code>led.value(1)</code> you typed by hand and
+  <code>led.value(1)</code> sitting in a file take an identical path through the VM.
+  That's why the REPL can <code>import</code> your own modules and call functions
+  defined in <code>main.py</code> if you <code>Ctrl-C</code> into it: the module objects are still
+  live on the heap.</li>
+<li><strong><code>Ctrl-C</code> works because MicroPython polls for it between bytecode
+  instructions.</strong> The USB/UART driver sets a flag on interrupt when it sees
+  byte <code>0x03</code>; the VM's bytecode dispatch loop checks that flag periodically
+  and raises <code>KeyboardInterrupt</code> at the next safe point — it is <em>not</em> an
+  OS-level signal (there's no OS to deliver one). This is also why a tight
+  loop with no I/O and no <code>time.sleep()</code> can occasionally feel slow to
+  interrupt: the check only happens between opcodes, and a single line like
+  a giant list comprehension can run many opcodes before yielding.</li>
+<li><strong>A soft reset (<code>Ctrl-D</code>) reruns boot without power-cycling the chip.</strong> It
+  discards the current heap, re-initializes the VM's global state, then
+  re-executes <code>boot.py</code> and <code>main.py</code> from the filesystem — but it does
+  <em>not</em> reset peripherals the hardware itself remembers (a GPIO left driven
+  high by <code>machine.Pin</code> can stay high across a soft reset since the pin
+  controller's register state isn't touched). A hard reset via <code>EN</code>/<code>RST</code> or
+  <code>machine.reset()</code> does a full chip reset, which does clear peripheral
+  state — a distinction that matters when you're debugging "why is the LED
+  still on after Ctrl-D."</li>
+<li><strong><code>mpremote</code> talks two different protocols to the same UART.</strong> The
+  friendly REPL you type into interactively is a plain terminal echo loop.
+  <code>mpremote fs cp</code> and <code>run</code> instead drop the board into "raw REPL" mode
+  (<code>Ctrl-A</code>) — a machine-oriented protocol with explicit start/end markers
+  and no echo, so the host tool can send exact bytes (including a whole
+  file's contents) and reliably tell when execution finished. That's the
+  actual meaning of the <code>Ctrl-A</code>/<code>Ctrl-B</code> row in the cheat sheet below:
+  raw REPL is what automation needs, friendly REPL is what humans need, and
+  they're the same interpreter behind two different framing protocols.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

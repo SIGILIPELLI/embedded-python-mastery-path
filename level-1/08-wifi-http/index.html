@@ -947,6 +947,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2228,6 +2239,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2400,6 +2422,52 @@ the request/response traffic also shows in the serial log.</p>
 <p>Note the server is <strong>blocking</strong>: while waiting in <code>accept()</code>, nothing else
 runs. That's the exact problem <code>uasyncio</code> solves in module 9, and the
 capstone's dashboard is this server rebuilt async.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>network</code> and <code>socket</code> are thin Python wrappers over the ESP32's WiFi
+firmware blob and lwIP TCP/IP stack — most of the real work happens in C
+code baked into MicroPython's build, not in the interpreter.</p>
+<ul>
+<li><strong>The WiFi radio runs its own firmware, separate from your MicroPython
+  program.</strong> The ESP32's WiFi/Bluetooth subsystem is driven by a closed-
+  source blob running on internal state machines that handle association,
+  authentication, and the 802.11 MAC layer — <code>wlan.connect()</code> just posts a
+  request to that subsystem and polls a status flag; the actual handshake
+  (probe, auth, association, DHCP) happens asynchronously in radio firmware
+  while your Python <code>while not wlan.isconnected()</code> loop spins. This is why
+  connecting has a real, variable wait: <code>isconnected()</code> is checking on
+  genuine RF-layer negotiation, not a Python-side state change.</li>
+<li><strong><code>requests</code>/<code>urequests</code> builds raw HTTP text and manages a <code>socket</code>
+  directly — there's no connection pooling, no keep-alive management, no
+  urllib3 underneath.</strong> Every <code>requests.get()</code> call opens a fresh TCP
+  socket, sends a hand-assembled HTTP/1.0 or 1.1 request line and headers as
+  bytes, and parses the response by scanning for <code>\r\n</code> — hundreds of times
+  simpler than CPython's <code>requests</code>, which is exactly why <code>.close()</code>
+  matters so much: the ESP32's lwIP stack has a small, fixed pool of TCP
+  Control Blocks (often single digits of concurrent sockets), and a
+  response object you forget to close holds one open until the underlying
+  socket's own timeout eventually reclaims it — potentially locking you out
+  of new connections well before you'd expect resource exhaustion on a
+  desktop.</li>
+<li><strong>DNS resolution and the TCP/IP stack itself are lwIP, a C library
+  compiled into the firmware, not Python.</strong> <code>socket.getaddrinfo()</code> calls
+  straight into lwIP's resolver; the three-way handshake, retransmission
+  timers, and checksum computation for every packet you send with
+  <code>conn.send()</code> are all lwIP state-machine code running outside the VM.
+  Python only sees the boundary — bytes in, bytes out — which is also why
+  <code>try/except OSError</code> is the correct universal guard: lwIP surfaces
+  virtually every network failure (timeout, reset, unreachable, DNS
+  failure) as the single generic <code>OSError</code> with different <code>errno</code> values,
+  rather than the rich exception hierarchy <code>requests</code> gives you on desktop.</li>
+<li><strong>The blocking <code>accept()</code> server blocks because there's no event loop
+  underneath it — the VM is simply parked waiting on lwIP to signal a new
+  connection.</strong> <code>s.accept()</code> calls into lwIP and yields the CPU to the
+  scheduler/idle loop until a SYN packet arrives; nothing else in your
+  program runs meanwhile because there is no cooperative scheduler managing
+  that wait. <code>uasyncio</code> (module 9) doesn't change what lwIP does — it wraps
+  the same non-blocking socket primitives lwIP exposes in a <code>select()</code>-like
+  poll loop so Python code can do other things while waiting, which is the
+  precise mechanical difference between this server and its async rewrite.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

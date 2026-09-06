@@ -1581,6 +1581,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2435,6 +2457,52 @@ on the actual target board. Desktop CPython has no equivalent of these
 decorators (they're MicroPython-specific compiler features), so there
 is nothing meaningful to run here to reproduce the ratios; the
 comparison only exists on-device.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>The three emitters (bytecode, native, viper) are three different <em>code
+generators</em> sharing one compiler front-end — the difference between them is
+entirely about what the compiler's back-end targets and what type
+information it's given to work with.</p>
+<ul>
+<li><strong>The bytecode emitter compiles to a stack-based virtual instruction
+  set</strong> — each source-level operation like <code>total += i * i</code> becomes several
+  opcodes (<code>LOAD_FAST</code>, <code>LOAD_FAST</code>, <code>BINARY_OP MULTIPLY</code>, <code>LOAD_FAST</code>,
+  <code>BINARY_OP ADD</code>, <code>STORE_FAST</code>) that the VM's dispatch loop decodes and
+  executes one at a time, each requiring a jump through a dispatch table
+  (or a giant switch statement) plus boxed-object arithmetic that checks
+  operand types at runtime — every <code>+</code> genuinely asks "what kind of thing
+  is this?" before deciding how to add it. That per-opcode dispatch and
+  per-operation type check is the interpretation overhead this whole module
+  exists to escape.</li>
+<li><strong><code>@micropython.native</code> compiles the <em>same</em> bytecode-level operations
+  directly to the target's native instruction set (ARM Thumb, Xtensa,
+  RISC-V depending on the port) at import time, but keeps every object
+  boxed and every operation's semantics identical.</strong> A native-compiled
+  <code>total += i * i</code> still calls the same boxed-integer-arithmetic runtime
+  functions bytecode would have called — it just reaches those calls
+  through direct machine-code branches instead of a dispatch-loop-and-opcode
+  fetch, which is why the speedup is real but modest (~2x): you've removed
+  the dispatch overhead, not the boxing/dynamic-typing overhead underneath.</li>
+<li><strong><code>@micropython.viper</code> is a genuinely different compiler mode that emits
+  code operating on raw machine words instead of boxed <code>mp_obj_t</code> values.</strong>
+  A viper <code>int</code> is compiled to occupy an actual CPU register or raw memory
+  slot holding a native 32-bit value — no boxing, no dynamic type check, no
+  runtime dispatch to a generic "add" function; <code>total += i * i</code> becomes
+  literal ADD/MUL machine instructions on registers, exactly like C would
+  generate. This is precisely why it's 10x+ and precisely why it silently
+  wraps on overflow: a genuine machine-word <code>int</code> has no bignum-promotion
+  path at all, because Python's arbitrary-precision integer semantics
+  simply were not compiled in for that variable.</li>
+<li><strong><code>ptr8</code>/<code>ptr16</code>/<code>ptr32</code> compile to a bare pointer dereference with no
+  runtime bounds check inserted, because inserting one is exactly the
+  Python-level safety machinery viper exists to strip away.</strong> A regular
+  <code>bytearray[i]</code> goes through <code>mp_obj_t</code> dispatch to a subscript handler
+  that explicitly compares <code>i</code> against the buffer's stored length before
+  reading — that comparison is Python-level object-model code viper's
+  typed pointers never generate, which is also why <code>ptr32</code> indexing is
+  word-granular: the compiler emits <code>base_address + i * 4</code>, the same raw
+  address arithmetic a C compiler would produce for <code>int32_t *p; p[i]</code>,
+  with no notion of "byte offset" surviving into the generated code at all.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

@@ -1412,6 +1412,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2294,6 +2305,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2514,6 +2536,44 @@ a cycle time — a 60-second cycle (chosen here so the module's demo isn't
 slow to observe) trades battery life for responsiveness; a real
 deployment reading weather every 10-15 minutes would last dramatically
 longer on the same battery.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>This capstone chains six modules' hardware mechanisms into one boot cycle,
+and the ordering of <code>run_cycle()</code> is deliberately shaped by which of those
+mechanisms are cheap versus expensive, and which can fail independently.</p>
+<ul>
+<li><strong>Every step in <code>run_cycle()</code> runs top-to-bottom on a <em>fresh</em> VM state</strong>
+  because the whole design lives inside a deep-sleep loop (module 3): the
+  chip resets between cycles, so there's no persistent WiFi connection,
+  MQTT session, or Python object surviving from one reading to the next.
+  <code>connect_wifi()</code> and <code>MQTTClient(...).connect()</code> genuinely re-associate
+  with the AP and re-open a fresh TCP socket every single cycle — that
+  reconnect cost (seconds, not milliseconds) is exactly the "active_ma for
+  active_s" term the battery estimate is modeling, and it's the single
+  biggest lever in the whole design: fewer, longer sleep cycles amortize
+  that fixed reconnect tax over more sensing time.</li>
+<li><strong>The outer <code>try/except Exception</code> around <code>run_cycle()</code> is positioned
+  specifically so <code>machine.deepsleep(CYCLE_MS)</code> is still reached on any
+  failure</strong> — because deep sleep is the <em>only</em> path back to a working state
+  here (there's no long-running main loop to recover into), a bug anywhere
+  in sensor reading, display, or MQTT publishing that isn't caught would
+  otherwise leave the board hung mid-cycle, burning active-mode current
+  indefinitely instead of the microamps sleep would cost — precisely the
+  runaway-battery-drain failure mode module 3's math warns about.</li>
+<li><strong><code>retain=True</code> on the MQTT publish exploits the broker-side state from
+  module 1's retained-message mechanism to compensate for the device's own
+  statelessness</strong> — since the station itself keeps no memory of its last
+  reading across a deep-sleep reset, having the <em>broker</em> hold the last
+  published value means any dashboard or subscriber that comes online
+  between this station's cycles still sees a current-ish reading rather
+  than nothing, without the device having to maintain any state of its own.</li>
+<li><strong><code>maybe_resync()</code>'s drift-gated NTP call is deliberately placed after
+  WiFi connects but is skipped most cycles</strong> — because the RTC domain
+  survives deep sleep (module 3) while the rest of the chip resets, the
+  clock the device already has is usually accurate enough; paying for a
+  full NTP round-trip (a blocking UDP exchange over the network, module 6)
+  on every single wake would add measurable active-current time for no
+  benefit on cycles where the clock hasn't meaningfully drifted.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

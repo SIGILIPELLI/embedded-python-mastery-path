@@ -1149,6 +1149,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2451,6 +2473,51 @@ library's socket-handling code. Calling <code>client.connect()</code> or
 internal state. Set a flag in the callback and act on it in the main
 loop instead.</p>
 </div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>umqtt.simple</code> is a small, deliberately minimal Python module (a few hundred
+lines, readable in full on the filesystem after <code>mip.install</code>) sitting
+directly on top of a raw TCP <code>socket</code> — there's no separate MQTT daemon or
+background thread doing the protocol work for you.</p>
+<ul>
+<li><strong>MQTT is a byte-level binary protocol, and <code>client.connect()</code>/<code>publish()</code>
+  hand-assemble its packets.</strong> Each MQTT operation (CONNECT, PUBLISH,
+  SUBSCRIBE) has a fixed binary header format — a control-packet type
+  nibble, flags, and a variable-length remaining-length field encoded as
+  1–4 bytes using a 7-bits-per-byte continuation scheme. <code>umqtt.simple</code>
+  builds these byte strings directly with <code>struct</code>-style packing and writes
+  them straight to the socket; this is why <code>publish()</code> demands <code>bytes</code> for
+  topic and payload rather than accepting <code>str</code> and encoding for you —
+  every extra convenience layer costs RAM and code size the library is
+  built to avoid.</li>
+<li><strong><code>check_msg()</code> doing a non-blocking read is really a <code>socket.settimeout(0)</code>
+  read wrapped in a try/except.</strong> Calling it repeatedly in your main loop is
+  literally polling the TCP socket's receive buffer for whether the OS-level
+  (well, lwIP-level, per module 8) network stack has assembled a complete
+  MQTT packet yet. <code>wait_msg()</code> is the same code path but with a blocking
+  socket read — the <em>only</em> difference between the two functions is whether
+  the underlying <code>recv()</code> call is allowed to block the whole VM waiting for
+  bytes that haven't arrived, which is exactly why mixing <code>wait_msg()</code> into
+  a loop that also needs to publish on a timer stalls the publishes.</li>
+<li><strong>The warning against reconnecting inside <code>on_message</code> is a reentrancy
+  rule, structurally identical to the ISR allocation ban from Level 1
+  module 5.</strong> <code>check_msg()</code> is mid-way through parsing a packet's bytes off
+  the socket (tracking how many more bytes of payload it still expects) when
+  it calls your callback; calling <code>client.connect()</code> from inside that
+  callback tears down and rebuilds the very socket <code>check_msg()</code>'s calling
+  frame still has a live reference to, corrupting its read-state exactly the
+  way allocating inside an ISR corrupts the GC's read-state — a "don't call
+  back into code that's currently calling you" hazard, whether the caller is
+  a hardware interrupt or a still-unwinding parse loop.</li>
+<li><strong>QoS 0 is "well supported" because it needs no bookkeeping at all</strong> —
+  publish the bytes, forget them, no acknowledgment round-trip, no retry
+  queue, no packet-ID tracking. QoS 1/2 require the client to remember
+  in-flight packet IDs and retransmit on missing PUBACK/PUBREC — real state
+  that has to survive across <code>check_msg()</code> calls and, ideally, across
+  reconnects. <code>umqtt.robust</code>'s reconnect wrapping is a much smaller ask than
+  full QoS 2 semantics, which is exactly why the library draws the line
+  where it does rather than reimplementing the full MQTT spec on a
+  100 KB-heap device.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

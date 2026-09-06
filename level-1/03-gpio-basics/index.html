@@ -807,6 +807,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2228,6 +2239,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2413,6 +2435,48 @@ the program does more than one thing (modules 5 and 9 build on this).</p>
 <p>Wokwi's virtual button can bounce realistically: select it and set
 <code>"bounce": "1"</code> in its properties, then try the buggy counter and watch it
 miscount, exactly like real hardware.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>Pin(5, Pin.OUT)</code> looks like it creates a "pin object," but what it actually
+does is configure a handful of bits in the ESP32's <strong>GPIO matrix</strong> and
+<strong>IO_MUX</strong> peripheral registers, and every call after that is a direct
+memory-mapped register write — there is no OS driver layer in between:</p>
+<ul>
+<li><strong><code>Pin(5, Pin.OUT)</code> writes to the GPIO_ENABLE register.</strong> Each GPIO pin on
+  the chip has a dedicated bit in a 32-bit "enable" register bank that
+  decides whether the pin's output driver is connected at all. Constructing
+  the <code>Pin</code> object in MicroPython sets that bit (and configures the IO_MUX
+  to route the pin's <em>function</em> to plain GPIO rather than, say, UART or
+  I2C — modules 4 and 6 revisit that muxing). This happens once, at
+  construction time, which is why re-creating <code>Pin</code> objects in a hot loop is
+  wasted work: keep the object and just call <code>.value()</code>.</li>
+<li><strong><code>led.value(1)</code> is a single-instruction register write under the hood.</strong>
+  On the ESP32, output pins 0–31 share one 32-bit "write 1 to set" register
+  (<code>GPIO_OUT_W1TS</code>) and a matching "write 1 to clear" register
+  (<code>GPIO_OUT_W1TC</code>) — writing a <code>1</code> to bit 5 of <code>W1TS</code> sets GPIO5 high
+  without disturbing any other pin's state, and the same bit in <code>W1TC</code>
+  clears it. <code>machine.Pin.value()</code> is a thin Python wrapper around exactly
+  that: one 32-bit store to a fixed physical address. The "3.3 V on the pin"
+  comment in the code above is not a metaphor — that store happens, and
+  microseconds later the transistor-level output driver on the die actually
+  changes voltage.</li>
+<li><strong>A floating input isn't "random" by accident — it's an unbiased,
+  extremely high-impedance node picking up whatever capacitive coupling and
+  electrical noise is nearby.</strong> The pull-up/pull-down resistors you enable
+  in software (<code>Pin.PULL_UP</code>) are physically tiny (~45 kΩ on ESP32) resistors
+  built into the pin's analog front end, connected or disconnected by
+  another register bit — <code>Pin.PULL_UP</code> doesn't change any logic in the VM,
+  it changes the analog circuit the digital reading is sampled from.</li>
+<li><strong>Debouncing is a software workaround for a hardware fact the VM can't
+  hide.</strong> The interpreter reads <code>button.value()</code> by loading the current
+  state of the GPIO_IN register — a snapshot of real voltage sampled by a
+  Schmitt-trigger input buffer, updated continuously by hardware regardless
+  of how often or rarely your Python loop asks. Mechanical bounce is a
+  physical property of the switch contact, not of MicroPython, which is why
+  no amount of "faster Python" fixes it — only time-based filtering
+  (<code>ticks_ms</code>/<code>ticks_diff</code>) does, because the fix has to live in the time
+  domain the bounce actually occurs in (a few milliseconds), independent of
+  how fast the interpreter itself can loop.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

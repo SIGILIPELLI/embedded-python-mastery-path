@@ -902,6 +902,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2250,6 +2261,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2405,6 +2427,55 @@ meet it with SD cards, color TFT displays, and fast ADCs:</p>
 </code></pre></div>
 <p>Rule of thumb at this level: prefer I2C parts when shopping — fewer wires,
 easier debugging with <code>scan()</code>.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>I2C, SPI, and the framebuffer model behind <code>oled.show()</code> all trade Python's
+usual "just call a method" comfort for tight control over what actually
+moves across the wire, one bit at a time.</p>
+<ul>
+<li><strong>Hardware I2C is a peripheral state machine, <code>SoftI2C</code> is Python
+  bit-banging the pins directly.</strong> <code>I2C(0, ...)</code> configures the ESP32's
+  dedicated I2C controller, which generates the start condition, clocks out
+  each bit on SDA synchronized to SCL, and watches for the slave's ACK bit —
+  all in silicon, at up to 400 kHz, without the CPU touching each bit.
+  <code>SoftI2C</code> instead has the <em>interpreter</em> toggle GPIO pins high and low in a
+  timed loop to fake the same protocol — it works on any two pins because
+  there's no dedicated hardware behind it, but every bit costs VM bytecode
+  dispatch time, which is why SoftI2C tops out far below 400 kHz and why the
+  cheat sheet's advice to prefer hardware I2C when available is really about
+  timing headroom, not convenience.</li>
+<li><strong><code>i2c.scan()</code> works by attempting the ACK handshake at all 112 possible
+  7-bit addresses.</strong> I2C's addressing scheme reserves one bit of each
+  address byte for read/write direction; a device "answers" by pulling SDA
+  low during the 9th clock pulse (the ACK slot) if it recognizes its own
+  address on the bus. <code>scan()</code> is literally 112 tiny transactions, each
+  checking for that one ACK bit — which is also why a wiring fault (SDA and
+  SCL swapped, missing pull-ups) makes <em>every</em> address come back empty: the
+  ACK slot never gets pulled low by anything.</li>
+<li><strong><code>readfrom_mem</code>/<code>writeto_mem</code> encode the sensor's own register-map
+  protocol, not something I2C defines.</strong> I2C itself only moves raw bytes
+  between a controller and a device; "register 0x6B means power management"
+  is a convention each chip's datasheet defines on top of that, and
+  <code>readfrom_mem(addr, reg, n)</code> is MicroPython's convenience wrapper for the
+  extremely common pattern of "write the register address, then read back
+  N bytes" — two I2C transactions stitched into one Python call.</li>
+<li><strong>The framebuffer is why <code>show()</code> is a separate step.</strong> <code>oled.fill()</code> and
+  <code>oled.text()</code> only flip bits in a <code>bytearray</code> sitting in the ESP32's own
+  RAM — a 1-bit-per-pixel bitmap, 1024 bytes for a 128×64 panel. The SSD1306
+  itself has its <em>own</em> separate display RAM on the other side of the I2C
+  bus; <code>show()</code> is the function that streams your local bytearray across
+  I2C into the display controller's memory, which is the only thing that
+  actually changes what's lit on the glass. Calling <code>text()</code> ten times
+  before one <code>show()</code> is cheap (RAM writes); calling <code>show()</code> ten times
+  would be ten slow I2C transfers of the whole framebuffer — the two-step
+  API exists specifically so you control that cost.</li>
+<li><strong>SPI has no addressing because chip-select does that job electrically.</strong>
+  Where I2C multiplexes many devices over shared wires using addresses sent
+  <em>in-band</em>, SPI dedicates a separate physical CS wire per device and
+  multiplexes <em>out-of-band</em> — pulling CS low is what tells a given chip
+  "the next clock pulses are for you," which is why SPI needs one more pin
+  per device but can run its shift registers much faster: there's no
+  per-bit ACK protocol to negotiate, just raw synchronous shifting.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

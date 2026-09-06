@@ -2013,6 +2013,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2432,6 +2454,51 @@ depends on:</p>
 <li>Automate the build in CI (module 08) rather than relying on a
   particular engineer's local toolchain install, which is very hard to
   make bit-for-bit reproducible by hand.</li>
+</ul>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A custom board definition is a set of C preprocessor macros and linker
+inputs that reshape the firmware image at compile time — it changes what
+gets baked in, not anything the interpreter reads or interprets at runtime.</p>
+<ul>
+<li><strong><code>mpconfigboard.h</code>'s <code>#define</code>s are C preprocessor conditionals compiled
+  directly into the interpreter's build, not runtime configuration flags
+  Python ever inspects.</strong> <code>MICROPY_PY_BLUETOOTH (0)</code> causes the entire
+  Bluetooth module's C source to be excluded from compilation via <code>#if</code>
+  guards throughout the codebase — the resulting firmware binary
+  genuinely contains no Bluetooth stack code at all, not a disabled one.
+  This is why it saves flash rather than just hiding a feature: code that
+  was never compiled in occupies zero bytes of the final image, unlike a
+  runtime-disabled feature that still ships its code, taking up flash
+  space, just never called.</li>
+<li><strong><code>MICROPY_GC_HEAP_SIZE</code> sets the literal size of the array the
+  allocator carves its fixed-size blocks (module 1, Level 3) out of</strong> —
+  it's a compile-time constant that determines how many bytes
+  <code>gc_init()</code> reserves from the chip's available RAM at boot, which
+  directly sets the ceiling every later <code>gc.mem_free()</code> call reports
+  against. Sizing this too small for a product's actual workload
+  reproduces exactly the fragmentation and <code>MemoryError</code> failure modes
+  Level 3 covers, but with less headroom to work around them than a
+  generic development board's default (usually sized generously for
+  broad compatibility, not any specific application).</li>
+<li><strong>Pin mappings like <code>pins.csv</code> become a lookup table the build system
+  generates into board-specific C source, mapping a symbolic name to a
+  literal GPIO number constant</strong> — <code>Pin.board.LED_STATUS</code> resolves, after
+  the build, to exactly the same underlying <code>Pin(4)</code> register-level
+  operation covered in Level 1 module 3; the indirection exists purely at
+  build time, compiled away by the time firmware runs, which is why it
+  costs nothing at runtime while still letting a board revision change
+  which physical pin a name points to without touching application source
+  at all.</li>
+<li><strong>The partition table (<code>partitions.csv</code>) is consumed by the second-stage
+  bootloader, which reads it from a fixed, known flash offset early in
+  boot to learn where each region — bootloader, otadata, the two OTA app
+  slots, the filesystem — actually starts and ends.</strong> This is the same
+  table the A/B update mechanism (module 2) relies on to find the inactive
+  partition to write into; changing partition sizes on an already-deployed
+  fleet is destructive precisely because the bootloader has no way to
+  reconcile old data laid out under one partition offset scheme with a
+  new one — it isn't a software migration problem so much as a "the map
+  itself changed and the data was placed according to the old map" problem.</li>
 </ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>

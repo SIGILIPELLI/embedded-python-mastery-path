@@ -1749,6 +1749,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2451,6 +2473,63 @@ worth reaching for specifically when:</p>
 <code>uasyncio</code> cooperatively before reaching for a second thread — a
 second core doesn't remove the correctness burden threads add, so it
 should be a deliberate trade, not a default.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>MicroPython's thread support genuinely hands Python code to a second
+physical core's instruction pipeline — this is the one place in the whole
+course where "the interpreter" stops being singular, and the GIL only
+partially compensates for that.</p>
+<ul>
+<li><strong>The GIL is a single mutex the VM's bytecode dispatch loop acquires
+  before executing each opcode (or a small batch of opcodes) and releases
+  periodically, ensuring only one core is ever mutating the interpreter's
+  own core data structures — the GC's mark bits, an object's internal
+  fields — at a given instant.</strong> It exists to protect the <em>interpreter</em>
+  from corrupting itself, not to make your program's higher-level
+  operations atomic. Because the lock is released and reacquired between
+  individual bytecode instructions (not between Python statements), a
+  single source line like <code>counter += 1</code> compiles to <code>LOAD_GLOBAL</code>,
+  <code>LOAD_CONST</code>, <code>BINARY_OP</code>, <code>STORE_GLOBAL</code> — four separate opportunities
+  for the scheduler to switch to the other core mid-sequence — which is
+  the literal bytecode-level explanation for why the read-modify-write
+  race in this module is reproducible.</li>
+<li><strong>On the RP2040, "the second core" is not a simulated or time-sliced
+  abstraction — MicroPython's port literally boots a second copy of its
+  interpreter loop running on physical core 1, with its own stack and
+  program counter, executing instructions from the same flash concurrently
+  with core 0.</strong> <code>_thread.start_new_thread</code> performs the RP2040 SDK's
+  <code>multicore_launch_core1()</code> call under the hood, handing that second
+  core an entry point into the MicroPython runtime configured to run your
+  Python function. This is qualitatively different from <code>uasyncio</code>'s
+  single-generator-resume loop (module 6): there, only one call stack ever
+  executes, and switches happen only at <code>await</code>; here, two independent
+  instruction streams genuinely execute in parallel, and either can be
+  paused mid-instruction by the memory bus arbiter, a cache-line fill, or
+  any number of hardware-level timing effects neither Python program
+  controls or can even observe.</li>
+<li><strong><code>_thread.allocate_lock()</code> maps to a real hardware-arbitrated primitive
+  on multi-core ports — typically the RP2040's SIO spinlocks, a small bank
+  of hardware registers specifically designed so two cores can attempt an
+  atomic test-and-set without racing each other at the silicon level.</strong>
+  Software running on a single core can rely on the GIL to serialize
+  bytecode; two genuinely parallel cores contending for the same shared
+  bytearray or peripheral need an actual atomic hardware operation as the
+  foundation, because there is no interpreter-level lock spanning two
+  separate cores' fetch-decode-execute pipelines — this is why the lock
+  here is a fundamentally different kind of primitive than <code>asyncio.Lock</code>
+  in module 6, even though both are used with the same <code>with lock:</code> syntax.</li>
+<li><strong>The I2C/SPI bus race is dangerous specifically because the peripheral's
+  internal state machine has no notion of "this transaction belongs to
+  thread A" — from the bus controller's perspective, writes and reads from
+  either core are indistinguishable interleaved register accesses to the
+  same hardware.</strong> An I2C write is itself multiple bus-level phases
+  (address byte, ACK, data bytes, ACK, stop condition); if core 0's
+  <code>writeto()</code> and core 1's <code>readfrom()</code> interleave their register pokes to
+  the same I2C controller mid-transaction, the controller's internal
+  protocol state machine sees a sequence of phases that doesn't correspond
+  to any valid single transaction — the bus doesn't reject this because it
+  has no concept of "transaction ownership" to enforce; only software
+  discipline (the lock) provides that.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

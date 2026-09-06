@@ -1609,6 +1609,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2461,6 +2483,55 @@ Python side loses its last reference).</p>
   editing a <code>.py</code> file and re-running it — a genuinely slower
   development loop, which is a real reason to reach for viper first and
   only drop to C when viper's ceiling is actually hit.</li>
+</ul>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Writing a C module means stepping outside the VM entirely and working
+directly against MicroPython's own C runtime — the same <code>mp_obj_t</code>
+machinery that every built-in module (<code>machine</code>, <code>network</code>, even the
+bytecode interpreter itself) is implemented on top of.</p>
+<ul>
+<li><strong><code>mp_obj_t</code> is a tagged pointer/value, not a real object header the way
+  CPython's <code>PyObject*</code> is — this is the same small-int-in-pointer trick
+  from module 1, generalized.</strong> On most ports, the low bits of an <code>mp_obj_t</code>
+  encode whether it's a small integer packed directly into the value, a
+  qstr (interned string), or a genuine pointer to a heap-allocated GC
+  object; <code>mp_obj_get_int()</code> and <code>mp_obj_new_int()</code> exist specifically to
+  hide that bit-tagging scheme from C module authors — treating an
+  <code>mp_obj_t</code> as a raw C integer (skipping the conversion function) happens
+  to "work" for small values purely by coincidence of the tagging bit
+  pattern, then breaks unpredictably for larger values or different object
+  kinds, which is exactly the beginner trap this module calls out.</li>
+<li><strong><code>mp_raise_ValueError</code> unwinding via <code>longjmp</code> reflects how MicroPython
+  implements Python exceptions in C at all — there is no C++ exception
+  machinery available, so the interpreter uses <code>setjmp</code>/<code>longjmp</code> to
+  simulate stack unwinding.</strong> Every <code>try/except</code> block in the interpreter
+  compiles to code that calls <code>setjmp</code> to record a recovery point; raising
+  an exception (from Python code or from <code>mp_raise_*</code> in C) calls
+  <code>longjmp</code> back to the nearest recorded point, skipping every stack frame
+  in between without running their C-level cleanup code — which is exactly
+  why the module warns that C-allocated resources need to be safe before
+  that call: <code>longjmp</code> bypasses ordinary C function returns entirely, so
+  there's no equivalent of a C++ destructor or Python's <code>finally</code> running
+  automatically along the way.</li>
+<li><strong><code>mp_obj_malloc</code> allocates through the same GC-tracked heap and bitmap
+  allocator described in module 1</strong> — a C module's custom type instances
+  are ordinary blocks in that same fixed-size-block heap, marked reachable
+  during the same mark phase (by walking the <code>mp_obj_base_t</code> type
+  information every GC-managed object starts with) and swept the same way.
+  Using bare <code>malloc()</code> instead allocates from the C library's separate
+  heap region, invisible to the mark-sweep walk — the collector has no way
+  to know that memory exists, let alone that a Python object references it,
+  which is the concrete mechanism behind "the collector will never see it."</li>
+<li><strong>The module/type registration tables (<code>mymodule_globals_table</code>,
+  <code>counter_locals_dict_table</code>) are the same dict-like "map" structure every
+  Python object's attributes live in, just built at C-compile time instead
+  of dynamically at runtime.</strong> <code>MP_DEFINE_CONST_DICT</code> produces a <code>const</code>
+  data structure the linker places in flash rather than RAM — this is why
+  built-in modules and their methods cost no heap space at all: the
+  attribute lookup that module 2 describes as "a dict lookup" for globals
+  and attributes is, for C-registered names, a lookup into a table that
+  was never allocated on the heap in the first place, existing instead as
+  read-only data baked into the firmware image.</li>
 </ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>

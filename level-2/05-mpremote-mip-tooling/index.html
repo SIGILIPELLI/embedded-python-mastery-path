@@ -1261,6 +1261,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2434,6 +2456,52 @@ iteration.</p>
 installed driver. Keep hand-edited vendor code outside <code>/lib</code>, or
 rename it, so a future <code>mip.install</code> doesn't clobber your changes.</p>
 </div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Every <code>mpremote</code> command ultimately reduces to two things: putting the board
+into "raw REPL" mode over the serial port, and either shipping Python source
+as text or streaming a file's bytes through small <code>os.open</code>/<code>write</code>/<code>close</code>
+calls executed remotely.</p>
+<ul>
+<li><strong><code>mpremote run</code> and <code>mpremote cp</code> use fundamentally different mechanisms
+  even though both "get code onto the board."</strong> <code>run</code> drops the board into
+  raw REPL, sends your file's <em>entire source</em> as one paste-mode block for
+  the interpreter to compile and execute immediately, and never touches the
+  filesystem — that's why a reset erases all trace of it. <code>cp</code> instead sends
+  a short remote-execution snippet that opens a file in write-binary mode on
+  the board and repeatedly calls <code>write()</code> with chunks of your file's bytes
+  read from your computer, base64- or raw-encoded over the raw-REPL
+  protocol — a genuine file transfer, ending with the board's own
+  filesystem holding the bytes on flash, independent of the running
+  program's state.</li>
+<li><strong><code>mount</code> avoids all copying by intercepting <code>import</code>/<code>open()</code> at the
+  filesystem level and satisfying reads over the serial link on demand.</strong>
+  <code>mpremote</code> implements a small custom "remote filesystem" protocol: when
+  the board's VM tries to <code>import mymodule</code>, it's actually asking a
+  <code>VfsRaw</code>-style driver mpremote installed, which round-trips a request
+  over serial back to your computer, reads the real file from disk there,
+  and returns its bytes. That per-access round trip over a ~1 Mbit serial
+  link is exactly why mount is slow compared to code already sitting on
+  flash — every <code>import</code>, every <code>open().read()</code> pays a full serial
+  round-trip that a locally-copied file never has to.</li>
+<li><strong>Serial port contention is a hardware fact, not an mpremote limitation.</strong>
+  A USB-to-serial adapter (or the ESP32's built-in USB-UART bridge) exposes
+  exactly one open file descriptor to the OS at a time; the tty driver
+  itself refuses a second process's <code>open()</code> on the same device node while
+  one is already held. <code>mpremote</code>'s "raw repl" handshake specifically needs
+  exclusive control of that byte stream to reliably frame commands and
+  responses without another process's bytes interleaving — which is why
+  even a passive terminal window (not actively typing) still blocks a
+  second <code>mpremote</code> process.</li>
+<li><strong><code>mip.install</code>'s silent overwrite follows from it fetching and writing
+  files exactly the way <code>mpremote cp</code> does — it has no concept of "existing
+  file, ask first."</strong> Under the hood, <code>mip</code> fetches package metadata (a
+  small JSON manifest) over HTTP from micropython-lib or GitHub's raw
+  content API, then does the same open-write-close file transfer as any
+  other filesystem write to <code>/lib</code>, one file at a time — there's no diffing
+  or merge logic anywhere in that path, only "write these bytes to this
+  path," which is why hand-edited vendor code sitting at the same path
+  disappears without warning on a re-install.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

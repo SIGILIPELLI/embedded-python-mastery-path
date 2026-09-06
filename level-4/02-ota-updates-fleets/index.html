@@ -1929,6 +1929,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2272,6 +2283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2442,6 +2464,57 @@ power loss mid-write from leaving a half-written, unusable file where
 a working one used to be — <code>os.rename</code> on a single filesystem is
 effectively atomic, while streaming new bytes directly on top of the
 existing file is not.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Both update paths lean on a mechanism this course keeps returning to:
+never mutate the thing currently in use — write the new version somewhere
+else, verify it, then flip a single pointer.</p>
+<ul>
+<li><strong>The ESP32's A/B partition scheme is enforced by the boot ROM itself,
+  not by MicroPython.</strong> The chip's first-stage bootloader (burned into
+  read-only mask ROM, running before any of your firmware) reads a small
+  "otadata" partition containing a sequence number and validity flags for
+  each OTA slot, and jumps to whichever partition that data currently
+  designates active. Espressif's OTA API writes the new image into the
+  inactive partition's flash region — physically separate flash sectors
+  from the ones the running firmware occupies — and only as its final
+  step updates the otadata partition's sequence number. Because the
+  currently-executing code is being read from flash sectors the update
+  never touches, a power loss at any point during the download leaves
+  those sectors — and the otadata pointer — exactly as they were: the ROM
+  bootloader boots the same partition it always did.</li>
+<li><strong>Version-tuple comparison working correctly for free is Python's
+  built-in lexicographic tuple ordering, applied to something where that
+  happens to be exactly the right semantics</strong> — <code>(2, 10, 0) &gt; (2, 9, 9)</code>
+  compares the first elements (<code>2 == 2</code>), then the second (<code>10 &gt; 9</code>), and
+  stops, exactly the way semantic versioning defines "newer." String
+  comparison instead compares byte values character-by-character, so
+  <code>"2.10.0"</code> loses to <code>"2.9.9"</code> because the character <code>'1'</code> (0x31) sorts
+  before <code>'9'</code> (0x39) at the very first differing position — the bug isn't
+  in version numbering at all, it's a byte-ordering artifact of using the
+  wrong data type for the comparison.</li>
+<li><strong><code>os.rename</code> being atomic on a single filesystem is a real LittleFS (and
+  most filesystem) guarantee rooted in how directory-entry updates work at
+  the block level</strong> — renaming a file only needs to update the directory
+  metadata block that maps a name to a data location, a single, small,
+  journaled write LittleFS can complete or not complete as one unit
+  (recall module 7, Level 1's copy-on-write log structure). Writing new
+  bytes directly on top of an existing file, by contrast, touches
+  potentially many data blocks over an extended period — a power loss
+  partway through leaves some blocks new and some old, an inconsistent mix
+  no rename-based scheme ever exposes because the old file's blocks are
+  never touched until the rename swaps which directory entry points where.</li>
+<li><strong>The rollout hash bucketing works because SHA-256 output is
+  (for practical purposes) uniformly distributed across its output space</strong>
+  — taking the first byte of a cryptographic hash and reducing it modulo
+  100 spreads device IDs evenly across buckets 0-99 regardless of how
+  device IDs are actually named (sequential, random, whatever), because a
+  cryptographic hash function is specifically designed so that small,
+  patterned changes in input (like an incrementing device counter) produce
+  effectively unpredictable, uncorrelated output bits — the same property
+  that makes hash functions useful for integrity verification is what
+  makes them useful for stable, pseudo-random-but-deterministic fleet
+  bucketing here.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

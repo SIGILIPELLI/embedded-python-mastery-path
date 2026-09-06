@@ -1799,6 +1799,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2316,6 +2327,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2553,6 +2575,53 @@ increasing fragmentation risk (module 01) rather than reducing it.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>This design is really an exercise in matching each subsystem to the layer
+of the machine that can actually guarantee its timing — the architecture
+diagram is a map of "who owns which clock domain."</p>
+<ul>
+<li><strong>PIO paces sampling because it's the only component in this whole
+  stack with a timing guarantee independent of the interpreter, the GC, or
+  the OS-less scheduler</strong> — as module 05 establishes, a PIO state machine
+  is separate silicon with its own instruction memory and clock divider,
+  so <code>sample_clock</code>'s <code>wrap_target()</code>/<code>.side()</code> loop keeps generating its
+  reference pulse at a fixed rate regardless of whether Core 0's Python
+  loop is mid-GC-pause, mid-bytecode-dispatch, or momentarily starved by
+  Core 1's lock contention. Every other component in the diagram — the
+  ring buffer, the viper checksum, the uasyncio streaming layer — exists
+  specifically to keep up with a clock that PIO, not Python, is generating.</li>
+<li><strong>The ring buffer's fixed capacity is chosen against a genuine worst-case
+  stall, not an average case, because the fixed-block heap allocator from
+  module 01 cannot grow this structure safely under load.</strong> A <code>bytearray</code>
+  is one contiguous allocation; resizing it mid-run would require finding
+  a larger contiguous free run and copying — exactly the fragmentation-
+  prone operation module 01 warns never to do in a hot path. Sizing for
+  <code>worst_case_stall_ms</code> up front means the <em>only</em> runtime cost of a stall
+  is temporarily fuller buffer occupancy, never a reallocation attempt that
+  could itself trigger the very GC pause the design is trying to keep off
+  the sampling path.</li>
+<li><strong>The lock's critical section is deliberately just the ring-buffer drain,
+  not the checksum computation or the UART write, because those two
+  operations have wildly different timing profiles and only one of them
+  needs cross-core exclusion.</strong> The ring buffer is genuinely shared
+  mutable state accessed from both cores' instruction streams (module 09's
+  hazard), so it needs the hardware-backed lock; the <code>batch</code> array and the
+  UART peripheral are touched only by Core 1, so protecting them with the
+  same lock would serialize Core 0's writer against Core 1's (comparatively
+  slow) UART I/O for no correctness benefit — exactly the "smallest
+  critical section possible" principle module 09 recommends, applied
+  concretely.</li>
+<li><strong><code>gc.collect()</code> landing only at the post-flush boundary is possible
+  because that's the one point in Core 1's loop where no cross-core lock
+  is held and no partially-filled buffer exists</strong> — calling it while
+  holding <code>lock</code> would mean Core 0's writer, blocked waiting for that same
+  lock, stalls for the full mark-sweep pause (module 01's single-digit-to-
+  tens-of-milliseconds figure) on top of its own sampling work, potentially
+  overflowing the ring buffer during the one operation meant to keep the
+  heap healthy — a direct collision between two modules' individual advice
+  that only resolves correctly once you reason about where the lock is and
+  isn't held.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

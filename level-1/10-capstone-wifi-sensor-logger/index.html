@@ -1047,6 +1047,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet-the-patterns-this-project-locked-in" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2316,6 +2327,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet-the-patterns-this-project-locked-in" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2635,6 +2657,47 @@ tasks. Every failure mode has a decision, not an accident.</p>
    confirm faster sampling; corrupt the JSON, reset, confirm it boots on
    defaults.</li>
 </ol>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>This capstone is a good place to see how the individually-explained
+mechanisms of modules 1–9 actually compose under real concurrent load on a
+single core with a fixed heap.</p>
+<ul>
+<li><strong>All four tasks (heartbeat, sampler, display, and every web client
+  handler) share one event loop and one heap, so a memory or timing mistake
+  in any one of them is visible everywhere.</strong> <code>SensorLog</code>'s ring buffer is
+  pre-allocated for exactly this reason: if <code>sensors.py</code> instead appended to
+  a growing list on every reading, the allocator would eventually have to
+  find space during a <code>poll_sensor</code>-style task's turn, potentially
+  triggering a GC pass (module 3 territory) that pauses <em>every</em> task,
+  including the heartbeat LED — so "n=0 e=0 with a steady 1 Hz blink" in
+  the test plan is really a proxy for "no task is doing unbounded
+  allocation."</li>
+<li><strong><code>asyncio.start_server</code> hands each incoming connection its own task, so
+  the web server's blocking-looking <code>await reader.readline()</code> doesn't block
+  the sampler.</strong> Each <code>handle()</code> invocation is a fresh coroutine the loop
+  schedules independently; when it awaits a socket read, the loop parks
+  that one task on the socket's readiness and moves on to whatever else is
+  ready — the sampler's <code>await asyncio.sleep(cfg["read_interval_s"])</code> and
+  the display's redraw keep firing on schedule regardless of how many
+  browsers are hitting <code>/api/data</code>. This is the mechanical reason this
+  design succeeds where module 8's single-<code>accept()</code>-loop server couldn't.</li>
+<li><strong>The bounded WiFi-connect loop (<code>for _ in range(100): ... time.sleep_ms(200)</code>)
+  is deliberately <em>not</em> async</strong> — it runs before <code>asyncio.run(main())</code>
+  starts the event loop, so there's no loop yet to yield to; blocking here
+  is the only option, which is exactly why it's bounded (100 × 200 ms = 20 s
+  max) rather than an unbounded <code>while not wlan.isconnected()</code>. An offline
+  device that still samples and displays is a direct consequence of not
+  letting that pre-loop wait become infinite.</li>
+<li><strong>Every <code>except OSError: pass</code> in <code>sensors.py</code> and <code>webapp.py</code> is
+  absorbing a different physical failure with the same Python exception
+  type</strong> — a flash write hitting <code>ENOSPC</code>, a DHT22 timing out on its
+  one-wire protocol, a TCP client resetting its connection mid-response —
+  because MicroPython's C layer maps nearly all low-level hardware and
+  networking failures onto <code>OSError</code> with an errno, rather than a rich
+  exception hierarchy. Catching the general case is the practical, if
+  coarse, way an embedded program stays alive through the failure modes its
+  desktop counterpart rarely has to consider at all.</li>
+</ul>
 <h2 id="cheat-sheet-the-patterns-this-project-locked-in">Cheat sheet — the patterns this project locked in<a class="headerlink" href="#cheat-sheet-the-patterns-this-project-locked-in" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

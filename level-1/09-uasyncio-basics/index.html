@@ -975,6 +975,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2228,6 +2239,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cheat-sheet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2404,6 +2426,53 @@ catches a 50 µs pulse that polling would miss. Rule of thumb: humans
 and sensors → coroutines; microsecond-precision external signals →
 interrupts feeding a flag that a task consumes.</p>
 </div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>uasyncio</code> gives you concurrency without threads or an OS scheduler — the
+trick is that it is entirely cooperative, and understanding what that means
+mechanically explains every rule in this module.</p>
+<ul>
+<li><strong>There is exactly one call stack and <code>asyncio.run()</code> owns it.</strong> A
+  coroutine object created by calling an <code>async def</code> function doesn't run
+  anything yet — it's a suspended generator-like object. <code>create_task</code>
+  registers it with the event loop's internal list of runnable tasks. The
+  loop itself is a plain Python <code>while True</code> (implemented in
+  <code>uasyncio/core.py</code>, which ships as ordinary MicroPython source you can
+  read on the filesystem) that repeatedly picks the next task whose wake-up
+  time has arrived and resumes it by calling <code>.send(None)</code> on the
+  underlying generator — resuming execution exactly at the last <code>await</code>
+  point. There is no separate stack per task the way there is per OS
+  thread; each task's "stack" is just the frozen local-variable state a
+  generator object carries.</li>
+<li><strong><code>await asyncio.sleep_ms(n)</code> doesn't block anything — it yields a value
+  the scheduler interprets as "wake me after n ms" and returns control to
+  the loop.</strong> Mechanically, <code>sleep_ms</code> is a generator function that
+  computes a wake time, yields once, and the event loop's dispatch code
+  reads that yielded value, files the task under a time-sorted wait queue,
+  and moves on to run whatever else is ready <em>right now</em>. This is why
+  <code>time.sleep()</code> inside a task is "the cardinal sin": <code>time.sleep()</code> is a
+  hard busy-wait in the VM that never returns control to the event loop at
+  all — the loop has no way to preempt it, because there is no preemption
+  anywhere in this system, only voluntary yielding at <code>await</code> points.</li>
+<li><strong>This is exactly why a long computation without an <code>await</code> starves every
+  other task</strong> — with no OS timer interrupting the VM to force a context
+  switch (unlike a real OS thread scheduler), the <em>only</em> mechanism that
+  hands control back to the loop is your code reaching an <code>await</code>. A tight
+  <code>for</code> loop crunching numbers for 200ms holds the entire single-core CPU
+  for that whole 200ms; <code>await asyncio.sleep_ms(0)</code> is a deliberate,
+  explicit yield point inserted purely so the scheduler gets a chance to
+  run other ready tasks, even though the sleep duration is nominally zero.</li>
+<li><strong>Shared state needs no locks because there is no true parallelism to
+  race against.</strong> On a real OS with preemptive threads, two threads
+  incrementing the same dict value can interleave mid-operation and corrupt
+  it. Here, a task runs uninterrupted C-bytecode-execution from one <code>await</code>
+  to the next — the VM never switches tasks mid-statement — so any code
+  between two <code>await</code> points is effectively atomic with respect to every
+  other task. That guarantee evaporates the moment a <code>Pin.irq</code> handler
+  (module 5) is in the mix, because interrupts <em>are</em> asynchronous relative
+  to the event loop and can genuinely interrupt a task mid-statement — the
+  reason the tip above draws the interrupts-vs-coroutines line where it
+  does.</li>
+</ul>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
