@@ -268,3 +268,8 @@ because of the specific order things happen in here.
   combining it with the CI gate from module 08 into one end-to-end
   checklist: what must be true, in order, before a batch of freshly
   manufactured units is approved for wide distribution.
+
+## 🔀 Related lessons on other tracks
+
+- [Embedded — Capstone — Production IoT Product](https://sigilipelli.github.io/embedded-mastery-path/level-4/10-capstone-production-iot/)
+- [NodeMCU/IoT — Capstone — Production IoT Product Design](https://sigilipelli.github.io/nodemcu-mastery-path/level-4/10-capstone-production-iot-product/)

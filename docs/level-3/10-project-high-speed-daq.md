@@ -275,3 +275,7 @@ diagram is a map of "who owns which clock domain."
   pause streaming) handled via the `uasyncio` layer on Core 1, and
   explain why this belongs in the async layer rather than in the
   locked ring-buffer drain path.
+
+## 🔀 Related lessons on other tracks
+
+- [Embedded — DMA & High-Speed Peripherals](https://sigilipelli.github.io/embedded-mastery-path/level-3/04-dma-high-speed-peripherals/)

@@ -212,6 +212,10 @@ hardware interact.
 | `micropython.alloc_emergency_exception_buf(100)` | Readable ISR tracebacks |
 | ISR debounce | Ignore edges < ~200 ms since last accepted |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — 07 · Timers & Interrupts](https://sigilipelli.github.io/embedded-mastery-path/level-1/07-timers-interrupts/)
+
 ## Exercise
 
 Build a **reaction timer** in Wokwi: LED on pin 5, button on pin 4. A

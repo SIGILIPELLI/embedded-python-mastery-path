@@ -215,6 +215,12 @@ provide.
 | Disabled/gated REPL and JTAG in production | Physical-access code execution and flash dumping |
 | Per-device credentials, not shared | One compromised unit becoming a fleet-wide compromise |
 
+## 🔀 Related lessons on other tracks
+
+- [Cybersecurity — 03 · Linux Security Hardening](https://sigilipelli.github.io/cybersecurity-mastery-path/level-2/03-linux-security-hardening/)
+- [Embedded Linux — 08 · Security Hardening & CVE Management](https://sigilipelli.github.io/embedded-linux-mastery-path/level-4/08-security-hardening/)
+- [GitHub & Git — 08 · Security Hardening (CODEOWNERS, signed commits, SAST)](https://sigilipelli.github.io/github-mastery-path/level-4/08-security-hardening/)
+
 ## Exercise
 
 In plain Python, write a small function `classify_exposure(has_tls_verification, has_open_repl, has_jtag_enabled, shared_credentials)` that returns a list of specific risk strings based on which flags are `True` (e.g. `"MITM possible: TLS verification disabled"`, `"physical code execution: REPL open"`, `"flash dump exposes secrets: JTAG enabled"`, `"single-unit compromise becomes fleet-wide: shared credentials"`). Call it with a few different flag combinations, including the worst case (all `True`) and the best case (all `False`), and print the resulting risk lists to confirm the function correctly reports zero risks in the hardened configuration and all four in the worst case.

@@ -227,6 +227,11 @@ background thread doing the protocol work for you.
 | `client.set_last_will(topic, msg, retain=True)` | Broker publishes this if the device vanishes |
 | `OSError` on publish/connect | Network/broker dropped — reconnect, don't crash |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — MQTT & IoT Messaging](https://sigilipelli.github.io/embedded-mastery-path/level-2/04-mqtt-iot-messaging/)
+- [NodeMCU/IoT — 01 · MQTT Basics for IoT Messaging](https://sigilipelli.github.io/nodemcu-mastery-path/level-2/01-mqtt-basics/)
+
 ## Exercise
 
 Build a **remote-controlled sensor node** in Wokwi: a DHT22 on pin 15 and

@@ -229,6 +229,11 @@ mocking/dependency-injection framework actually behave at runtime.
 | Dependency injection into services | Business logic that can only be tested on real hardware |
 | Hardware imports isolated to drivers | Whole modules unable to run/test on desktop |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — Production Firmware Architecture](https://sigilipelli.github.io/embedded-mastery-path/level-4/01-production-firmware-architecture/)
+- [Freertos — Production Firmware Architecture](https://sigilipelli.github.io/freertos-mastery-path/level-4/03-production-architecture/)
+
 ## Exercise
 
 In plain Python (no MicroPython-specific imports), implement the

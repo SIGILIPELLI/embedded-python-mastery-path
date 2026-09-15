@@ -224,6 +224,12 @@ else, verify it, then flip a single pointer.
 | Staged rollout via hashed device ID | Stable per-device bucket, no flip-flopping between checks |
 | Verify-then-atomic-rename | Never leave a partially-written file as the live one |
 
+## 🔀 Related lessons on other tracks
+
+- [Edge AI — OTA Model Updates](https://sigilipelli.github.io/edge-ai-mastery-path/level-4/02-ota-model-updates/)
+- [Embedded Linux — 03 · OTA Updates (RAUC, SWUpdate, OSTree)](https://sigilipelli.github.io/embedded-linux-mastery-path/level-4/03-ota-updates/)
+- [Embedded — OTA Firmware Updates](https://sigilipelli.github.io/embedded-mastery-path/level-2/05-ota-updates/)
+
 ## Exercise
 
 In plain Python, implement `rollout_bucket(device_id, num_buckets=100)`

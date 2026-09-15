@@ -227,6 +227,12 @@ do) rests directly on mechanisms earlier modules established.
 | Fleet health alerting | Stale devices (per-unit issue) vs. version fragmentation (rollout issue) |
 | Dashboard | Presentation over registry/telemetry data, built last |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded Linux — 07 · Fleet Management & Provisioning](https://sigilipelli.github.io/embedded-linux-mastery-path/level-4/07-fleet-management/)
+- [Embedded — Fleet Management & Device Clouds](https://sigilipelli.github.io/embedded-mastery-path/level-4/09-fleet-management/)
+- [NodeMCU/IoT — Fleet Management Concepts](https://sigilipelli.github.io/nodemcu-mastery-path/level-4/03-fleet-management-concepts/)
+
 ## Exercise
 
 In plain Python, implement `DeviceRecord` and `Registry` as shown, then

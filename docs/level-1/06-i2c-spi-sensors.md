@@ -215,6 +215,10 @@ moves across the wire, one bit at a time.
 | `oled.fill(0)` / `text()` / `show()` | Clear, draw, then *push* to the panel |
 | SPI | SCK/MOSI/MISO + one CS per device; CS is active-low |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — 06 · Sensors, I2C & SPI](https://sigilipelli.github.io/embedded-mastery-path/level-1/06-sensors-i2c-spi/)
+
 ## Exercise
 
 Build a **min/max weather display** in Wokwi: DHT22 on pin 15, SSD1306 on

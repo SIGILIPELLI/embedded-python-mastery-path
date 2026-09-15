@@ -240,6 +240,10 @@ in RAM survives it except a tiny, deliberately isolated region.
 | `machine.RTC().memory(bytes)` / `.memory()` | Small state store that survives deep sleep |
 | duty cycle = active_s / (active_s + sleep_s) | Drives battery life more than raw sleep current |
 
+## 🔀 Related lessons on other tracks
+
+- [NodeMCU/IoT — 03 · Deep Sleep & Power Management](https://sigilipelli.github.io/nodemcu-mastery-path/level-2/03-deep-sleep-power-management/)
+
 ## Exercise
 
 Build a **battery-aware logger** (logic testable in plain `python3`, sleep

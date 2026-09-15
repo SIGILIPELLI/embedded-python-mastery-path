@@ -218,6 +218,10 @@ crossing a wire, with meaning that exists only in the datasheet's convention
 | two-point linear calibration | `scale, offset` from two known references |
 | propagate `OSError` from init | Fail loud, not silently-wrong |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — Project — Custom Sensor Board Firmware](https://sigilipelli.github.io/embedded-mastery-path/level-3/10-project-sensor-board/)
+
 ## Exercise
 
 Write (and test with `python3`, feeding it fabricated byte strings — no

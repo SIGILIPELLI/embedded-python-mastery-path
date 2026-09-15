@@ -230,6 +230,11 @@ worth being precise about what each check can and can't actually prove.
 | Yield tracking | Fraction of units passing first-try; earliest signal of a hardware problem |
 | Failure breakdown | Turns a yield drop into an actionable, component-specific signal |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — Manufacturing, DFM & Factory Test](https://sigilipelli.github.io/embedded-mastery-path/level-4/08-manufacturing-dfm-test/)
+- [S32K Automotive — Manufacturing, EOL Test & Traceability](https://sigilipelli.github.io/s32k-mastery-path/level-4/09-manufacturing-eol-test/)
+
 ## Exercise
 
 In plain Python, implement `factory_self_test`, `all_passed`,

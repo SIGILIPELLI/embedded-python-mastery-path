@@ -203,6 +203,10 @@ gets baked in, not anything the interpreter reads or interprets at runtime.
 | Frozen modules for this board specifically | Board-local `manifest.py` |
 | Reproducibility | Pinned MicroPython commit + pinned toolchain version + CI build |
 
+## 🔀 Related lessons on other tracks
+
+- [Embedded — Project — Custom Sensor Board Firmware](https://sigilipelli.github.io/embedded-mastery-path/level-3/10-project-sensor-board/)
+
 ## Exercise
 
 This is a build-configuration topic with no toolchain here to invoke,
