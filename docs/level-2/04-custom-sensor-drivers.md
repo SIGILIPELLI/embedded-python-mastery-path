@@ -1,3 +1,7 @@
+---
+description: "Writing Custom Sensor Drivers — Every sensor you've used so far (dht, ssd1306) came with a driver someone already wrote. Sooner or later you'll buy a part…"
+---
+
 # Writing Custom Sensor Drivers
 
 Every sensor you've used so far (`dht`, `ssd1306`) came with a driver

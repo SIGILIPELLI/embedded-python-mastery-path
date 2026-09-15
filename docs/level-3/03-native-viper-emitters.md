@@ -1,3 +1,7 @@
+---
+description: "Native & Viper Code Emitters — MicroPython normally compiles your source to bytecode, interpreted at runtime — that interpretation overhead is where most…"
+---
+
 # Native & Viper Code Emitters
 
 MicroPython normally compiles your source to bytecode, interpreted at

@@ -1,3 +1,7 @@
+---
+description: "Threads & Dual-Core MicroPython — Both the ESP32 and the RP2040 have more than one CPU core, and MicroPython's _thread module can run Python code on a…"
+---
+
 # Threads & Dual-Core MicroPython
 
 Both the ESP32 and the RP2040 have more than one CPU core, and

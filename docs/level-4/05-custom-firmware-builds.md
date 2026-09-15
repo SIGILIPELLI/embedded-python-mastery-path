@@ -1,3 +1,7 @@
+---
+description: "Custom Firmware Builds & Board Definitions — Every module so far has assumed a stock MicroPython build for a supported board. Production hardware is…"
+---
+
 # Custom Firmware Builds & Board Definitions
 
 Every module so far has assumed a stock MicroPython build for a

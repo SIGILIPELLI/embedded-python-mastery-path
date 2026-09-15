@@ -1,3 +1,7 @@
+---
+description: "Fleet Management & Remote Monitoring — One device is easy to reason about. A hundred, or a hundred thousand, need a device registry, a way to see their…"
+---
+
 # Fleet Management & Remote Monitoring
 
 One device is easy to reason about. A hundred, or a hundred thousand,

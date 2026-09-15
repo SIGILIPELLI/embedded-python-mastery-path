@@ -1,3 +1,7 @@
+---
+description: "I2C & SPI Sensors — Real projects read real sensors, and most sensors speak one of two buses: I2C (two wires, shared by many devices, each with an…"
+---
+
 # 06 · I2C & SPI Sensors
 
 Real projects read real sensors, and most sensors speak one of two buses:

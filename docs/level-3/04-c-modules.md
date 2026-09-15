@@ -1,3 +1,7 @@
+---
+description: "Writing C Modules for MicroPython — Viper gets you 10x; sometimes you need the full generality and speed of C — a proper DSP routine, a vendor SDK you…"
+---
+
 # Writing C Modules for MicroPython
 
 Viper gets you 10x; sometimes you need the full generality and speed of

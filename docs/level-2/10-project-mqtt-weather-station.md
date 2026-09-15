@@ -1,3 +1,7 @@
+---
+description: "Project — MQTT Weather Station — This capstone combines every module in Level 2 into one battery-friendly device: read a sensor, timestamp the reading…"
+---
+
 # Project — MQTT Weather Station
 
 This capstone combines every module in Level 2 into one battery-friendly

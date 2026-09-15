@@ -1,3 +1,7 @@
+---
+description: "Project — High-Speed Data Acquisition — This project combines every tool from Level 3 into one build: sample a signal as fast as the hardware allows, move…"
+---
+
 # Project — High-Speed Data Acquisition
 
 This project combines every tool from Level 3 into one build: sample a

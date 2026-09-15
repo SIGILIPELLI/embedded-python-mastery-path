@@ -1,3 +1,7 @@
+---
+description: "OTA Updates for MicroPython Fleets — Shipping firmware once is easy; shipping the next version to devices already deployed in the field, without a truck…"
+---
+
 # OTA Updates for MicroPython Fleets
 
 Shipping firmware once is easy; shipping the *next* version to devices

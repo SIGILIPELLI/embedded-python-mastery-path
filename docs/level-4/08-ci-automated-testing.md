@@ -1,3 +1,7 @@
+---
+description: "CI, Emulation & Automated Testing — Nothing in this course so far has been 'tested' in the sense a web/backend developer means it — most modules…"
+---
+
 # CI, Emulation & Automated Testing
 
 Nothing in this course so far has been "tested" in the sense a

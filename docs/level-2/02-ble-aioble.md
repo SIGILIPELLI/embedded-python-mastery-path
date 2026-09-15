@@ -1,3 +1,7 @@
+---
+description: "BLE with aioble — WiFi isn't the only way an ESP32 talks to the world — Bluetooth Low Energy is the low-power, short-range option, ideal for a phone app…"
+---
+
 # BLE with aioble
 
 WiFi isn't the only way an ESP32 talks to the world — **Bluetooth Low

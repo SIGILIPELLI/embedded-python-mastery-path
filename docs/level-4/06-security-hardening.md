@@ -1,3 +1,7 @@
+---
+description: "Security Hardening — TLS & Secure Storage — A device that phones home over the internet, holds provisioned credentials, and sits physically accessible in…"
+---
+
 # Security Hardening — TLS & Secure Storage
 
 A device that phones home over the internet, holds provisioned

@@ -1,3 +1,7 @@
+---
+description: "uasyncio Basics — Every module so far hit the same wall: time.sleep() freezes everything, and doing several things 'at once' meant hand-weaving ticks_ms()…"
+---
+
 # 09 · uasyncio Basics
 
 Every module so far hit the same wall: `time.sleep()` freezes everything,

@@ -1,3 +1,7 @@
+---
+description: "ESP-NOW & Peer-to-Peer WiFi — MQTT (module 1) needs a broker and a network — great for cloud-connected devices, overkill for two ESP32s in the same room…"
+---
+
 # ESP-NOW & Peer-to-Peer WiFi
 
 MQTT (module 1) needs a broker and a network — great for cloud-connected

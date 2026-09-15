@@ -1,3 +1,7 @@
+---
+description: "Deep Sleep & Battery Power — An ESP32 running full-tilt draws 80-100+ mA — a fresh 18650 battery lasts a day, maybe two. The same board in deep sleep…"
+---
+
 # Deep Sleep & Battery Power
 
 An ESP32 running full-tilt draws 80-100+ mA — a fresh 18650 battery lasts

@@ -1,3 +1,7 @@
+---
+description: "GPIO Basics — GPIO — general-purpose input/output — is the foundation of everything a microcontroller does: each pin can be driven high or low (output) or…"
+---
+
 # 03 · GPIO Basics
 
 GPIO — *general-purpose input/output* — is the foundation of everything a

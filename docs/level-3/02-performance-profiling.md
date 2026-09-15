@@ -1,3 +1,7 @@
+---
+description: "Performance Profiling & Optimization — Before optimizing anything, measure it. MicroPython has no cProfile, no line_profiler, and no sampling profiler …"
+---
+
 # Performance Profiling & Optimization
 
 Before optimizing anything, measure it. MicroPython has no `cProfile`,

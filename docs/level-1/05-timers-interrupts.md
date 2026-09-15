@@ -1,3 +1,7 @@
+---
+description: "Timers & Interrupts — So far our programs poll: spin in while True, checking everything on every pass. That works until it doesn't — a busy loop misses a…"
+---
+
 # 05 · Timers & Interrupts
 
 So far our programs poll: spin in `while True`, checking everything on every

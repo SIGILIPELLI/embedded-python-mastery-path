@@ -1,3 +1,7 @@
+---
+description: "Production Firmware Architecture — Everything so far has been about making individual pieces of MicroPython code fast and correct. Shipping a product…"
+---
+
 # Production Firmware Architecture
 
 Everything so far has been about making individual pieces of

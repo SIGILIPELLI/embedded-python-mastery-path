@@ -1,3 +1,7 @@
+---
+description: "Memory Management & the Garbage Collector — MicroPython runs on a heap measured in tens or a few hundred kilobytes, not gigabytes. Every object — int…"
+---
+
 # Memory Management & the Garbage Collector
 
 MicroPython runs on a heap measured in tens or a few hundred kilobytes,

@@ -1,3 +1,7 @@
+---
+description: "Files & Persistence — Everything in RAM vanishes at reset — and embedded devices reset a lot (power loss, watchdogs, deploys). The ESP32's flash chip…"
+---
+
 # 07 · Files & Persistence
 
 Everything in RAM vanishes at reset — and embedded devices reset a lot

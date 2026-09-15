@@ -1,3 +1,7 @@
+---
+description: "Capstone — Production IoT Product — This capstone combines the entire Level 4 toolkit into one coherent product design: a device that's provisioned…"
+---
+
 # Capstone — Production IoT Product
 
 This capstone combines the entire Level 4 toolkit into one coherent

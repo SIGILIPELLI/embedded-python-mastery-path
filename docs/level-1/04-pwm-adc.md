@@ -1,3 +1,7 @@
+---
+description: "PWM & ADC — Digital pins know only 0 and 1, but the real world is analog — brightness, position, temperature, volume. Two peripherals bridge the gap: PWM…"
+---
+
 # 04 · PWM & ADC
 
 Digital pins know only 0 and 1, but the real world is analog — brightness,

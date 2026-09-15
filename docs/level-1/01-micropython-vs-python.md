@@ -1,3 +1,7 @@
+---
+description: "MicroPython vs. Python — MicroPython is a lean reimplementation of Python 3 that runs directly on a microcontroller — no operating system, no gigabytes of…"
+---
+
 # 01 · MicroPython vs. Python
 
 MicroPython is a lean reimplementation of Python 3 that runs *directly on a

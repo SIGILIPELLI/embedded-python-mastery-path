@@ -1,3 +1,7 @@
+---
+description: "NTP, RTC & Timekeeping — A board that boots up thinking it's January 1, 2000 can't timestamp sensor readings meaningfully. This module covers syncing the…"
+---
+
 # NTP, RTC & Timekeeping
 
 A board that boots up thinking it's January 1, 2000 can't timestamp

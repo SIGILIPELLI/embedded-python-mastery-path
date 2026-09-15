@@ -1,3 +1,7 @@
+---
+description: "Frozen Modules & Custom Manifests — Every .py file copied to a device's filesystem has to be parsed and compiled to bytecode at import time, and it lives…"
+---
+
 # Frozen Modules & Custom Manifests
 
 Every `.py` file copied to a device's filesystem has to be parsed and

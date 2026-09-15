@@ -1,3 +1,7 @@
+---
+description: "REPL & Workflow — The thing that makes MicroPython development fast is the REPL: a live Python prompt running on the chip itself. You can toggle a pin…"
+---
+
 # 02 · REPL & Workflow
 
 The thing that makes MicroPython development *fast* is the REPL: a live

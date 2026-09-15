@@ -1,3 +1,7 @@
+---
+description: "WiFi & HTTP — The ESP32's superpower is the radio: a $5 board that joins your WiFi and speaks HTTP turns every project into an IoT project. In MicroPython…"
+---
+
 # 08 · WiFi & HTTP
 
 The ESP32's superpower is the radio: a $5 board that joins your WiFi and

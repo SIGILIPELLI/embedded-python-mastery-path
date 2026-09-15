@@ -1,3 +1,7 @@
+---
+description: "Manufacturing & Factory Test — Between 'firmware works on my dev board' and 'firmware works on the first unit a customer plugs in' sits manufacturing…"
+---
+
 # Manufacturing & Factory Test
 
 Between "firmware works on my dev board" and "firmware works on the

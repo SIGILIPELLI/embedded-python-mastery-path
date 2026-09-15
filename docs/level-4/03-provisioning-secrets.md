@@ -1,3 +1,7 @@
+---
+description: "Device Provisioning & Secrets Management — A freshly-flashed board knows nothing: no WiFi credentials, no server address, no identity distinguishing it…"
+---
+
 # Device Provisioning & Secrets Management
 
 A freshly-flashed board knows nothing: no WiFi credentials, no server

@@ -1,3 +1,7 @@
+---
+description: "NeoPixels, Displays & Device UI — A blinking LED is fine for module 1; a real device needs a way to show status and take input without a laptop attached.…"
+---
+
 # NeoPixels, Displays & Device UI
 
 A blinking LED is fine for module 1; a real device needs a way to show

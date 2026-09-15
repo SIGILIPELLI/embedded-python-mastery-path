@@ -1,3 +1,7 @@
+---
+description: "Advanced uasyncio Patterns — Basic async def/await gets you concurrent I/O without threads. Real device firmware needs more: coordinating multiple…"
+---
+
 # Advanced uasyncio Patterns
 
 Basic `async def`/`await` gets you concurrent I/O without threads. Real

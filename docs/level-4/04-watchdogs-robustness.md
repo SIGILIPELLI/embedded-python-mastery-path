@@ -1,3 +1,7 @@
+---
+description: "Watchdogs, Brownout & Robustness Patterns — A device deployed in the field has no keyboard, no debugger, and no one watching. When it locks up, corrupts…"
+---
+
 # Watchdogs, Brownout & Robustness Patterns
 
 A device deployed in the field has no keyboard, no debugger, and no one

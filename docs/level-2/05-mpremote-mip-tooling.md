@@ -1,3 +1,7 @@
+---
+description: "mpremote & mip — Tooling Deep Dive — Level 1 introduced mpremote and mip at a survival level. This module is the deep dive: the full mpremote command set…"
+---
+
 # mpremote & mip — Tooling Deep Dive
 
 Level 1 introduced `mpremote` and `mip` at a survival level. This module is

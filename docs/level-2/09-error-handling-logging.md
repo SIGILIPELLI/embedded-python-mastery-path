@@ -1,3 +1,7 @@
+---
+description: "Error Handling & On-Device Logging — A laptop-connected script that crashes just prints a traceback and stops. A weather station bolted to a fence post…"
+---
+
 # Error Handling & On-Device Logging
 
 A laptop-connected script that crashes just prints a traceback and stops.

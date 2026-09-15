@@ -1,3 +1,7 @@
+---
+description: "MQTT & IoT Messaging — Sensors are only useful once their data leaves the board. MQTT is the lightweight publish/subscribe protocol that IoT devices use…"
+---
+
 # MQTT & IoT Messaging
 
 Sensors are only useful once their data leaves the board. **MQTT** is the

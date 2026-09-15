@@ -1,3 +1,7 @@
+---
+description: "The Inline Assembler — Below viper's typed Python and above a full C module sits one more tool: @micropython.asm_thumb, MicroPython's inline assembler for…"
+---
+
 # The Inline Assembler
 
 Below viper's typed Python and above a full C module sits one more
