@@ -219,9 +219,9 @@ attacker with the flash chip in hand can and can't recover.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded Linux — 04 · udev & Device Management](https://sigilipelli.github.io/embedded-linux-mastery-path/level-2/04-udev-device-management/)
-- [Embedded — Fleet Management & Device Clouds](https://sigilipelli.github.io/embedded-mastery-path/level-4/09-fleet-management/)
-- [Docker — 09 · Secrets & Config Management](https://sigilipelli.github.io/docker-mastery-path/level-3/09-secrets-config-management/)
+- [Embedded Linux — 04 · udev & Device Management](https://learnmasterypath.com/embedded-linux-mastery-path/level-2/04-udev-device-management/)
+- [Embedded — Fleet Management & Device Clouds](https://learnmasterypath.com/embedded-mastery-path/level-4/09-fleet-management/)
+- [Docker — 09 · Secrets & Config Management](https://learnmasterypath.com/docker-mastery-path/level-3/09-secrets-config-management/)
 
 ## Exercise
 

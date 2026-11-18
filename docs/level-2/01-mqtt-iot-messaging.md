@@ -229,8 +229,8 @@ background thread doing the protocol work for you.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — MQTT & IoT Messaging](https://sigilipelli.github.io/embedded-mastery-path/level-2/04-mqtt-iot-messaging/)
-- [NodeMCU/IoT — 01 · MQTT Basics for IoT Messaging](https://sigilipelli.github.io/nodemcu-mastery-path/level-2/01-mqtt-basics/)
+- [Embedded — MQTT & IoT Messaging](https://learnmasterypath.com/embedded-mastery-path/level-2/04-mqtt-iot-messaging/)
+- [NodeMCU/IoT — 01 · MQTT Basics for IoT Messaging](https://learnmasterypath.com/nodemcu-mastery-path/level-2/01-mqtt-basics/)
 
 ## Exercise
 

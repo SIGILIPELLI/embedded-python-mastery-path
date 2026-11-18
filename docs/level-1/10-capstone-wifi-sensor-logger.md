@@ -359,5 +359,5 @@ takes the same hardware into MQTT, BLE, deep sleep, and real tooling.
 
 ## 🔀 Related lessons on other tracks
 
-- [NodeMCU/IoT — 10 · Capstone — WiFi Sensor Node & Web Server](https://sigilipelli.github.io/nodemcu-mastery-path/level-1/10-capstone-wifi-sensor-node/)
-- [Embedded — Project — WiFi Data Logger](https://sigilipelli.github.io/embedded-mastery-path/level-2/10-project-wifi-data-logger/)
+- [NodeMCU/IoT — 10 · Capstone — WiFi Sensor Node & Web Server](https://learnmasterypath.com/nodemcu-mastery-path/level-1/10-capstone-wifi-sensor-node/)
+- [Embedded — Project — WiFi Data Logger](https://learnmasterypath.com/embedded-mastery-path/level-2/10-project-wifi-data-logger/)

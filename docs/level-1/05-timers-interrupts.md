@@ -214,7 +214,7 @@ hardware interact.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — 07 · Timers & Interrupts](https://sigilipelli.github.io/embedded-mastery-path/level-1/07-timers-interrupts/)
+- [Embedded — 07 · Timers & Interrupts](https://learnmasterypath.com/embedded-mastery-path/level-1/07-timers-interrupts/)
 
 ## Exercise
 

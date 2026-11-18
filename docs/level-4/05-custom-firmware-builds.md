@@ -205,7 +205,7 @@ gets baked in, not anything the interpreter reads or interprets at runtime.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — Project — Custom Sensor Board Firmware](https://sigilipelli.github.io/embedded-mastery-path/level-3/10-project-sensor-board/)
+- [Embedded — Project — Custom Sensor Board Firmware](https://learnmasterypath.com/embedded-mastery-path/level-3/10-project-sensor-board/)
 
 ## Exercise
 

@@ -231,8 +231,8 @@ mocking/dependency-injection framework actually behave at runtime.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — Production Firmware Architecture](https://sigilipelli.github.io/embedded-mastery-path/level-4/01-production-firmware-architecture/)
-- [Freertos — Production Firmware Architecture](https://sigilipelli.github.io/freertos-mastery-path/level-4/03-production-architecture/)
+- [Embedded — Production Firmware Architecture](https://learnmasterypath.com/embedded-mastery-path/level-4/01-production-firmware-architecture/)
+- [Freertos — Production Firmware Architecture](https://learnmasterypath.com/freertos-mastery-path/level-4/03-production-architecture/)
 
 ## Exercise
 

@@ -7,7 +7,7 @@ end of each level. Every Level 1 example runs in the free
 [Wokwi online simulator](https://wokwi.com/)'s *MicroPython on ESP32* project
 type, so no hardware is required to start.
 
-**Live site:** https://sigilipelli.github.io/embedded-python-mastery-path/
+**Live site:** https://learnmasterypath.com/embedded-python-mastery-path/
 
 ## Contents
 
@@ -26,30 +26,30 @@ python3 -m venv .venv
 
 ## Related
 
-- [Python Mastery Path](https://sigilipelli.github.io/python-mastery-path/) — desktop Python foundations (recommended before this track)
-- [Embedded Systems Mastery Path](https://sigilipelli.github.io/embedded-mastery-path/) — the C/C++ track on the same hardware
-- [Java Mastery Path](https://sigilipelli.github.io/java-mastery-path/)
-- [JavaScript Mastery Path](https://sigilipelli.github.io/javascript-mastery-path/)
-- [Shell Mastery Path](https://sigilipelli.github.io/shell-mastery-path/)
-- [C Mastery Path](https://sigilipelli.github.io/c-mastery-path/)
-- [C++ Mastery Path](https://sigilipelli.github.io/cpp-mastery-path/)
-- [Go Mastery Path](https://sigilipelli.github.io/go-mastery-path/)
-- [SQL Mastery Path](https://sigilipelli.github.io/sql-mastery-path/)
-- [Rust Mastery Path](https://sigilipelli.github.io/rust-mastery-path/)
-- [TypeScript Mastery Path](https://sigilipelli.github.io/typescript-mastery-path/)
-- [Ruby Mastery Path](https://sigilipelli.github.io/ruby-mastery-path/)
-- [PHP Mastery Path](https://sigilipelli.github.io/php-mastery-path/)
-- [Kotlin Mastery Path](https://sigilipelli.github.io/kotlin-mastery-path/)
-- [Swift Mastery Path](https://sigilipelli.github.io/swift-mastery-path/)
-- [Scala Mastery Path](https://sigilipelli.github.io/scala-mastery-path/)
-- [R Mastery Path](https://sigilipelli.github.io/r-mastery-path/)
-- [Dart Mastery Path](https://sigilipelli.github.io/dart-mastery-path/)
-- [PowerShell Mastery Path](https://sigilipelli.github.io/powershell-mastery-path/)
-- [AI & ML Mastery Path](https://sigilipelli.github.io/ai-ml-mastery-path/)
-- [LLM Development Mastery Path](https://sigilipelli.github.io/llm-dev-mastery-path/)
-- [RAG Mastery Path](https://sigilipelli.github.io/rag-mastery-path/)
-- [AWS Mastery Path](https://sigilipelli.github.io/aws-mastery-path/)
-- [Azure Mastery Path](https://sigilipelli.github.io/azure-mastery-path/)
-- [Google Cloud Mastery Path](https://sigilipelli.github.io/gcp-mastery-path/)
-- [IBM Cloud Mastery Path](https://sigilipelli.github.io/ibm-cloud-mastery-path/)
-- [Adobe Creative Cloud Mastery Path](https://sigilipelli.github.io/adobe-mastery-path/)
+- [Python Mastery Path](https://learnmasterypath.com/python-mastery-path/) — desktop Python foundations (recommended before this track)
+- [Embedded Systems Mastery Path](https://learnmasterypath.com/embedded-mastery-path/) — the C/C++ track on the same hardware
+- [Java Mastery Path](https://learnmasterypath.com/java-mastery-path/)
+- [JavaScript Mastery Path](https://learnmasterypath.com/javascript-mastery-path/)
+- [Shell Mastery Path](https://learnmasterypath.com/shell-mastery-path/)
+- [C Mastery Path](https://learnmasterypath.com/c-mastery-path/)
+- [C++ Mastery Path](https://learnmasterypath.com/cpp-mastery-path/)
+- [Go Mastery Path](https://learnmasterypath.com/go-mastery-path/)
+- [SQL Mastery Path](https://learnmasterypath.com/sql-mastery-path/)
+- [Rust Mastery Path](https://learnmasterypath.com/rust-mastery-path/)
+- [TypeScript Mastery Path](https://learnmasterypath.com/typescript-mastery-path/)
+- [Ruby Mastery Path](https://learnmasterypath.com/ruby-mastery-path/)
+- [PHP Mastery Path](https://learnmasterypath.com/php-mastery-path/)
+- [Kotlin Mastery Path](https://learnmasterypath.com/kotlin-mastery-path/)
+- [Swift Mastery Path](https://learnmasterypath.com/swift-mastery-path/)
+- [Scala Mastery Path](https://learnmasterypath.com/scala-mastery-path/)
+- [R Mastery Path](https://learnmasterypath.com/r-mastery-path/)
+- [Dart Mastery Path](https://learnmasterypath.com/dart-mastery-path/)
+- [PowerShell Mastery Path](https://learnmasterypath.com/powershell-mastery-path/)
+- [AI & ML Mastery Path](https://learnmasterypath.com/ai-ml-mastery-path/)
+- [LLM Development Mastery Path](https://learnmasterypath.com/llm-dev-mastery-path/)
+- [RAG Mastery Path](https://learnmasterypath.com/rag-mastery-path/)
+- [AWS Mastery Path](https://learnmasterypath.com/aws-mastery-path/)
+- [Azure Mastery Path](https://learnmasterypath.com/azure-mastery-path/)
+- [Google Cloud Mastery Path](https://learnmasterypath.com/gcp-mastery-path/)
+- [IBM Cloud Mastery Path](https://learnmasterypath.com/ibm-cloud-mastery-path/)
+- [Adobe Creative Cloud Mastery Path](https://learnmasterypath.com/adobe-mastery-path/)

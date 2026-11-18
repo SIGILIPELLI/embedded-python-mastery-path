@@ -232,8 +232,8 @@ worth being precise about what each check can and can't actually prove.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — Manufacturing, DFM & Factory Test](https://sigilipelli.github.io/embedded-mastery-path/level-4/08-manufacturing-dfm-test/)
-- [S32K Automotive — Manufacturing, EOL Test & Traceability](https://sigilipelli.github.io/s32k-mastery-path/level-4/09-manufacturing-eol-test/)
+- [Embedded — Manufacturing, DFM & Factory Test](https://learnmasterypath.com/embedded-mastery-path/level-4/08-manufacturing-dfm-test/)
+- [S32K Automotive — Manufacturing, EOL Test & Traceability](https://learnmasterypath.com/s32k-mastery-path/level-4/09-manufacturing-eol-test/)
 
 ## Exercise
 

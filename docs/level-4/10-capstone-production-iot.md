@@ -271,5 +271,5 @@ because of the specific order things happen in here.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — Capstone — Production IoT Product](https://sigilipelli.github.io/embedded-mastery-path/level-4/10-capstone-production-iot/)
-- [NodeMCU/IoT — Capstone — Production IoT Product Design](https://sigilipelli.github.io/nodemcu-mastery-path/level-4/10-capstone-production-iot-product/)
+- [Embedded — Capstone — Production IoT Product](https://learnmasterypath.com/embedded-mastery-path/level-4/10-capstone-production-iot/)
+- [NodeMCU/IoT — Capstone — Production IoT Product Design](https://learnmasterypath.com/nodemcu-mastery-path/level-4/10-capstone-production-iot-product/)

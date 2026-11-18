@@ -229,9 +229,9 @@ do) rests directly on mechanisms earlier modules established.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded Linux — 07 · Fleet Management & Provisioning](https://sigilipelli.github.io/embedded-linux-mastery-path/level-4/07-fleet-management/)
-- [Embedded — Fleet Management & Device Clouds](https://sigilipelli.github.io/embedded-mastery-path/level-4/09-fleet-management/)
-- [NodeMCU/IoT — Fleet Management Concepts](https://sigilipelli.github.io/nodemcu-mastery-path/level-4/03-fleet-management-concepts/)
+- [Embedded Linux — 07 · Fleet Management & Provisioning](https://learnmasterypath.com/embedded-linux-mastery-path/level-4/07-fleet-management/)
+- [Embedded — Fleet Management & Device Clouds](https://learnmasterypath.com/embedded-mastery-path/level-4/09-fleet-management/)
+- [NodeMCU/IoT — Fleet Management Concepts](https://learnmasterypath.com/nodemcu-mastery-path/level-4/03-fleet-management-concepts/)
 
 ## Exercise
 

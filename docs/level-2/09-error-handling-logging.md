@@ -281,8 +281,8 @@ introspection layer desktop Python's `traceback` module provides.
 
 ## 🔀 Related lessons on other tracks
 
-- [Excel — 05 · Advanced VBA (UserForms, Error Handling)](https://sigilipelli.github.io/excel-mastery-path/level-3/05-advanced-vba-userforms-error-handling/)
-- [REST API — 08 · Error Handling Conventions](https://sigilipelli.github.io/rest-api-mastery-path/level-1/08-error-handling-conventions/)
+- [Excel — 05 · Advanced VBA (UserForms, Error Handling)](https://learnmasterypath.com/excel-mastery-path/level-3/05-advanced-vba-userforms-error-handling/)
+- [REST API — 08 · Error Handling Conventions](https://learnmasterypath.com/rest-api-mastery-path/level-1/08-error-handling-conventions/)
 
 ## Exercise
 

@@ -217,7 +217,7 @@ moves across the wire, one bit at a time.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — 06 · Sensors, I2C & SPI](https://sigilipelli.github.io/embedded-mastery-path/level-1/06-sensors-i2c-spi/)
+- [Embedded — 06 · Sensors, I2C & SPI](https://learnmasterypath.com/embedded-mastery-path/level-1/06-sensors-i2c-spi/)
 
 ## Exercise
 

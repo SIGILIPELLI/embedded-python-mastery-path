@@ -217,9 +217,9 @@ provide.
 
 ## 🔀 Related lessons on other tracks
 
-- [Cybersecurity — 03 · Linux Security Hardening](https://sigilipelli.github.io/cybersecurity-mastery-path/level-2/03-linux-security-hardening/)
-- [Embedded Linux — 08 · Security Hardening & CVE Management](https://sigilipelli.github.io/embedded-linux-mastery-path/level-4/08-security-hardening/)
-- [GitHub & Git — 08 · Security Hardening (CODEOWNERS, signed commits, SAST)](https://sigilipelli.github.io/github-mastery-path/level-4/08-security-hardening/)
+- [Cybersecurity — 03 · Linux Security Hardening](https://learnmasterypath.com/cybersecurity-mastery-path/level-2/03-linux-security-hardening/)
+- [Embedded Linux — 08 · Security Hardening & CVE Management](https://learnmasterypath.com/embedded-linux-mastery-path/level-4/08-security-hardening/)
+- [GitHub & Git — 08 · Security Hardening (CODEOWNERS, signed commits, SAST)](https://learnmasterypath.com/github-mastery-path/level-4/08-security-hardening/)
 
 ## Exercise
 

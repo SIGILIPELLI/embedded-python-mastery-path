@@ -242,7 +242,7 @@ in RAM survives it except a tiny, deliberately isolated region.
 
 ## 🔀 Related lessons on other tracks
 
-- [NodeMCU/IoT — 03 · Deep Sleep & Power Management](https://sigilipelli.github.io/nodemcu-mastery-path/level-2/03-deep-sleep-power-management/)
+- [NodeMCU/IoT — 03 · Deep Sleep & Power Management](https://learnmasterypath.com/nodemcu-mastery-path/level-2/03-deep-sleep-power-management/)
 
 ## Exercise
 

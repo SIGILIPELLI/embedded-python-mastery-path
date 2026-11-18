@@ -234,9 +234,9 @@ peripheral surfaces its counter to Python.
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded Linux — 09 · Performance Profiling (perf, ftrace)](https://sigilipelli.github.io/embedded-linux-mastery-path/level-3/09-performance-profiling/)
-- [ETL & Data Lake — 04 · Cost & Performance Optimization for Lake Storage](https://sigilipelli.github.io/etl-datalake-mastery-path/level-3/04-cost-performance-optimization/)
-- [Excel — 05 · Performance Optimization for Large Workbooks](https://sigilipelli.github.io/excel-mastery-path/level-4/05-performance-optimization-large-workbooks/)
+- [Embedded Linux — 09 · Performance Profiling (perf, ftrace)](https://learnmasterypath.com/embedded-linux-mastery-path/level-3/09-performance-profiling/)
+- [ETL & Data Lake — 04 · Cost & Performance Optimization for Lake Storage](https://learnmasterypath.com/etl-datalake-mastery-path/level-3/04-cost-performance-optimization/)
+- [Excel — 05 · Performance Optimization for Large Workbooks](https://learnmasterypath.com/excel-mastery-path/level-4/05-performance-optimization-large-workbooks/)
 
 ## Exercise
 

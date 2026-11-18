@@ -278,4 +278,4 @@ diagram is a map of "who owns which clock domain."
 
 ## 🔀 Related lessons on other tracks
 
-- [Embedded — DMA & High-Speed Peripherals](https://sigilipelli.github.io/embedded-mastery-path/level-3/04-dma-high-speed-peripherals/)
+- [Embedded — DMA & High-Speed Peripherals](https://learnmasterypath.com/embedded-mastery-path/level-3/04-dma-high-speed-peripherals/)
