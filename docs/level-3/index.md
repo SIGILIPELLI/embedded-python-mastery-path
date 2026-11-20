@@ -1,3 +1,7 @@
+---
+description: "Level 3 (Advanced) of the free Embedded Python Mastery Path. Look under MicroPython's hood — understand the heap and garbage collector, make hot code fast…"
+---
+
 # Level 3 · Advanced <span class="level-badge">Advanced</span>
 
 Goal: look under MicroPython's hood — understand the heap and garbage

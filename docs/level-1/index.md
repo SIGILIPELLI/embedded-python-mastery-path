@@ -1,3 +1,7 @@
+---
+description: "Level 1 (Entry) of the free Embedded Python Mastery Path. Get comfortable programming microcontrollers in Python using MicroPython on the ESP32 — the…"
+---
+
 # Level 1 · Entry <span class="level-badge">Foundations</span>
 
 Goal: get comfortable programming microcontrollers in Python using

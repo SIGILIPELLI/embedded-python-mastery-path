@@ -1,3 +1,7 @@
+---
+description: "Level 2 (Intermediate) of the free Embedded Python Mastery Path. Turn single-board sketches into connected, battery-aware devices — publish over MQTT…"
+---
+
 # Level 2 · Intermediate <span class="level-badge">Intermediate</span>
 
 Goal: turn single-board sketches into connected, battery-aware devices —

@@ -6,6 +6,7 @@ repo_name: embedded-python-mastery-path
 
 theme:
   name: material
+  font: false
   favicon: assets/favicon.svg
   custom_dir: docs/overrides
   palette:
@@ -24,6 +25,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - navigation.path
     - navigation.tabs
     - navigation.sections
     - navigation.expand
@@ -54,6 +56,20 @@ extra_css:
 
 extra_javascript:
   - javascripts/progress-tracker.js
+
+
+
+
+extra:
+  related:
+    - name: "Embedded"
+      url: https://learnmasterypath.com/embedded-mastery-path/
+    - name: "Embedded Linux"
+      url: https://learnmasterypath.com/embedded-linux-mastery-path/
+    - name: "FreeRTOS"
+      url: https://learnmasterypath.com/freertos-mastery-path/
+    - name: "S32K"
+      url: https://learnmasterypath.com/s32k-mastery-path/
 
 nav:
   - Home: index.md

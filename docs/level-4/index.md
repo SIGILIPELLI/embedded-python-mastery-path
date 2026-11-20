@@ -1,3 +1,7 @@
+---
+description: "Level 4 (Master) of the free Embedded Python Mastery Path. Operate MicroPython in production — architecture that survives years unattended, over-the-air…"
+---
+
 # Level 4 · Master <span class="level-badge">Master</span>
 
 Goal: operate MicroPython in production — architecture that survives years
