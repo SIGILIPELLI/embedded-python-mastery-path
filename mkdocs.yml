@@ -53,9 +53,11 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
   - stylesheets/progress-tracker.css
+  - stylesheets/final-quiz.css
 
 extra_javascript:
   - javascripts/progress-tracker.js
+  - javascripts/final-quiz.js
 
 
 
@@ -125,3 +127,5 @@ nav:
       - "CI, Emulation & Automated Testing": level-4/08-ci-automated-testing.md
       - "Manufacturing & Factory Test": level-4/09-manufacturing-factory-test.md
       - "Capstone — Production IoT Product": level-4/10-capstone-production-iot.md
+  - "🎯 Final Quiz": quiz.md
+
