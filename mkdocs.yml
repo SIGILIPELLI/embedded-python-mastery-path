@@ -81,8 +81,8 @@ not_in_nav: |
 
 nav:
   - Home: index.md
-  - "💼 Interview Questions": interview-questions.md
-  - "📋 Cheat Sheet": cheat-sheet.md
+  - Interview Questions: interview-questions.md
+  - Cheat Sheet: cheat-sheet.md
   - "Level 1 · Entry":
       - Overview: level-1/index.md
       - "01 · MicroPython vs. Python": level-1/01-micropython-vs-python.md
@@ -131,5 +131,5 @@ nav:
       - "CI, Emulation & Automated Testing": level-4/08-ci-automated-testing.md
       - "Manufacturing & Factory Test": level-4/09-manufacturing-factory-test.md
       - "Capstone — Production IoT Product": level-4/10-capstone-production-iot.md
-  - "🎯 Final Quiz": quiz.md
+  - Final Quiz: quiz.md
 
