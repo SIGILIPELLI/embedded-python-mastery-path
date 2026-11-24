@@ -2,7 +2,7 @@
 description: "Capstone — WiFi Sensor Logger — Time to combine every module into one real device: a WiFi sensor logger that reads a DHT22, keeps a bounded log on flash…"
 ---
 
-# 10 · Capstone — WiFi Sensor Logger
+# 10 · Project — WiFi Sensor Logger
 
 Time to combine every module into one real device: a **WiFi sensor logger**
 that reads a DHT22, keeps a bounded log on flash, shows live status on an
