@@ -21,8 +21,3 @@ MicroPython development fast.
 8. [ESP-NOW & Peer-to-Peer WiFi](08-espnow-peer-to-peer.md)
 9. [Error Handling & On-Device Logging](09-error-handling-logging.md)
 10. [Project — MQTT Weather Station](10-project-mqtt-weather-station.md)
-
-!!! info "Content status"
-    Level 2 module content is being written — every page below has its
-    scope defined and will be filled in next. [Level 1](../level-1/index.md)
-    is complete and is the prerequisite for everything here.
