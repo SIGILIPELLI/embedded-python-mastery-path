@@ -8,8 +8,7 @@ description: "Free MicroPython/embedded Python course from beginner to advanced,
 A structured, module-wise MicroPython training program that takes you from
 your first blinking LED to production-grade, master-level embedded Python —
 ESP32-first (with Raspberry Pi Pico notes along the way), with real, runnable
-MicroPython code in every module and a hands-on project at the end of each
-level.
+MicroPython code in every module and a hands-on project at the end of Levels 1–3 and a capstone at the end of Level 4.
 
 **No hardware required to start.** Every Level 1 example runs in the free
 [Wokwi online simulator](https://wokwi.com/) — create a *MicroPython on
@@ -32,8 +31,7 @@ unchanged on real boards.
 - Every topic page has real, runnable MicroPython code — paste it into a
   [Wokwi](https://wokwi.com/) *MicroPython on ESP32* project (or onto a real
   board with Thonny/`mpremote`) and run it as you read.
-- Each level ends with a project that combines everything learned in that
-  level.
+- Levels 1–3 each end with a project that combines everything learned in that level, and Level 4 ends with the course capstone.
 - New to Python itself? Do
   [Python Mastery Path — Level 1](https://learnmasterypath.com/python-mastery-path/)
   first; this site assumes basic Python syntax and jumps straight to the
